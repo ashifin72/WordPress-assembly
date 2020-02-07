@@ -1,0 +1,7 @@
+/* ************************** */
+/* bwp- Shortcodes plugin | button style (for TinyMCE editor)
+/* ************************** */
+
+i.bwp_shortcodes_icon {
+  background: url('../img/sc_btn.png') center center no-repeat;
+}

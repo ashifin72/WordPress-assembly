@@ -1,0 +1,191 @@
+/*
+Theme Name: WPhome 2
+Theme URI:   https://info-m.pro/vse-dlya-wordpress/wphome.html
+Author: Ашифин Федор
+Author URI: https://Info-M.pro
+Description:  Бесплатный адаптивный шаблон для ведения блога на WordPress. Чтобы получить информацию по настройке, перейдите на <a href="https://info-m.pro/vse-dlya-wordpress/wphome.html" target="_blank">сайт Info-M</a> на страницу  шаблона
+Version: 2.0
+
+
+
+/*# sourceMappingURL=style.css.map */
+img.size-auto,
+img.size-full,
+img.size-large,
+img.size-medium,
+.attachment img,
+.widget-container img {
+    max-width: 100%;
+    height: auto;
+}
+.alignleft,
+img.alignleft {
+    display: inline;
+    float: left;
+    margin-right: 24px;
+    margin-top: 4px;
+}
+.alignright,
+img.alignright {
+    display: inline;
+    float: right;
+    margin-left: 24px;
+    margin-top: 4px;
+}
+.aligncenter,
+img.aligncenter {
+    clear: both;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+img.alignleft,
+img.alignright,
+img.aligncenter {
+    margin-bottom: 12px;
+}
+.wp-caption {
+    background: #f1f1f1;
+    line-height: 18px;
+    margin-bottom: 20px;
+    padding: 4px;
+    text-align: center;
+}
+.wp-caption img {
+    margin: 5px 5px 0;
+    max-width: 622px; /* caption width - 10px */
+}
+.wp-caption p.wp-caption-text {
+    color: #777;
+    font-size: 12px;
+    margin: 5px;
+}
+.wp-smiley {
+    margin: 0;
+}
+.sample-posts{
+    margin-top: 25px;
+}
+/*
+* Внешний вид формы
+*/
+#add_feedback {
+    margin: 20px 0 0;
+    position: relative;
+}
+
+#art_name, #art_email, #art_subject, #art_comments {
+    padding: 10px 5px;
+    display: inline-block;
+    width: 49.548%;
+    border-radius: 3px;
+    border: 1px solid #a2a2a2;
+    font-size: 0.9em;
+}
+
+#art_subject {
+    width: 100%;
+    margin: 15px 0;
+}
+
+#art_comments {
+    width: 100%;
+}
+
+#add_feedback .button {
+    border: none;
+    padding: 10px 20px;
+    color: #fff;
+    font-size: 1em;
+    display: inherit;
+    margin: 10px 0 0 0;
+    border-radius: 3px;
+    background-color: #2f94ce;
+}
+
+#add_feedback input[type="text"]:focus, #add_feedback input[type="password"]:focus, #add_feedback input[type="email"]:focus, #add_feedback textarea:focus {
+    color: #444;
+    box-shadow: 0 0 3px rgba(68, 68, 68, 0.2);
+}
+
+.error-text {
+    background: #F59E9E;
+    padding: 15px 0px;
+    text-align: center;
+    color: #fff;
+}
+
+.error-name, .error-email, .error-comments {
+    display: inline-block;
+    font-size: 11px;
+    position: absolute;
+    top: -30px;
+    color: white;
+    border: 1px solid red;
+    padding: 5px 10px;
+    line-height: 1.1;
+    background: red;
+    box-shadow: 0 0 3px 0px rgba(0, 0, 0, 0.3);
+}
+
+.error-name:after, .error-email:after, .error-comments:after {
+    content: '';
+    position: absolute;
+    left: 20px;
+    bottom: -10px;
+    border: 5px solid transparent;
+    border-top: 5px solid red;
+}
+
+.error-comments {
+    top: 16%;
+    left: 0;
+}
+
+.error-name {
+
+    left: 0;
+}
+
+.error-email {
+    right: 4%;
+}
+
+.message-success {
+    background: rgba(0, 128, 0, 0.5);
+    color: #fff;
+    padding: 20px;
+    text-align: center;
+    margin: 20px auto;
+    border-radius: 3px;
+}
+
+#add_feedback .error {
+    border: 1px solid red;
+
+}
+
+#add_feedback .required:after {
+    content: '*';
+    position: absolute;
+    left: 20px;
+    bottom: -10px;
+}
+
+#art_name:focus::-moz-placeholder,
+#art_name:focus:-moz-placeholder,
+#art_name:focus:-ms-input-placeholder,
+#art_email:focus::-webkit-input-placeholder,
+#art_email:focus::-moz-placeholder,
+#art_email:focus:-moz-placeholder,
+#art_email:focus:-ms-input-placeholder,
+#art_comments:focus::-webkit-input-placeholder,
+#art_comments:focus::-moz-placeholder,
+#art_comments:focus:-moz-placeholder,
+#art_comments:focus:-ms-input-placeholder,
+#art_subject:focus::-webkit-input-placeholder,
+#art_subject:focus::-moz-placeholder,
+#art_subject:focus:-moz-placeholder,
+#art_subject:focus:-ms-input-placeholder {
+    color: transparent
+}
