@@ -1,86 +1,151 @@
-=== Q2W3 Fixed Widget ===
-Contributors: Max Bond
-Tags: sidebar, widget, scroll, scrolling, fixed, fixed widget, floating, floating widget, sticky, sticky widget, russian, q2w3
-Requires at least: 4.0
-Tested up to: 4.6
-Stable tag: 5.0.4
+=== Q2W3 Fixed Widget for WordPress ===
+Contributors: webzunft, max-bond, advancedads
+Tags: fixed widget, sticky widget, sidebar, ads, widget
+Requires at least: 5.0
+Tested up to: 5.7
+Stable tag: 5.3.0
 
-Fixes positioning of the selected widgets, when the page is scrolled down. 
+More attention and a higher ad performance with fixed sticky widgets.
 
 == Description ==
 
-Enable "Fixed widget" option in the widget settings and it will be always in sight when page is scrolled down or up. There is no problem to "fix" or "stick" more than one widget even located in different sidebars!
+Use the fixed widget plugin to create sticky widgets that stay in the visible screen area when the page is scrolled up or down. 
 
-[Live demo!](http://q2w3.ru/fixed-widget-demo/)
+Sticky widgets are perceived much better by your visitors than unfixed widgets and therefore have a significantly higher click-through rate. Therefore, this option is especially useful for ads or other items that visitors want to interact with.
 
-New in version 5.0:
-1. Optimized client side performance. Detection of page changes is now based on MutationObserver API. Widget parameters recount is fired only when needed! Refresh interval option used only for campatibility with old browsers (no MutationObserver API support).
-2. Improved compatibility with caching plugins (W3TC, Autoptimize and etc.). No need to exclude jQuery and plugin files from cache!
-3. Async/Defer script load method support
-4. Added `Disable Width` and `Disable Height` options
+The recommended solution for integrating ads in WordPress is the free ad management plugin [Advanced Ads](https://wordpress.org/plugins/advanced-ads/).
 
-Note for cache plugins users. Don't forget to clear the cache after upgrading to version 5! Options format has been changed!
+* [Manual and demo](https://wpadvancedads.com/fixed-widget-wordpress/)
 
-Compatibility note. The plugin is not working with all themes! Theme requirements:
+= Test version 6.0.0 =
 
-* jQuery 1.7 required. jQuery 1.8.3 (or later) is recommended.
-* No JavaScript errors, coused by other plugins and scripts.
+Please download and test [version 6.0.0, beta 3](https://downloads.wordpress.org/plugin/q2w3-fixed-widget.6.0.0-beta-3.zip).
+
+It solves a lot of edge cases with various themes and improves PageSpeed scores.
+
+Most changes are available when you switch on "Test new version" under Appearance > Fixed Widget Options.
+
+Please test and [let us know](https://wordpress.org/support/plugin/q2w3-fixed-widget/) if you discover any issues.
+
+= Compatibility = 
+
+The plugin is not working with all themes! Theme requirements:
+
+* jQuery 1.7 is required, jQuery 1.8.3 (or later) is recommended.
+* No JavaScript errors caused by other plugins and scripts.
 * `wp_head()` and `wp_footer()` functions in header.php and footer.php files.
-* Widgets must have an id attribute.
+* Widgets must have an ID attribute.
 
-In some cases (widget "jumping" during scroll and etc.) theme CSS changes may be required.
-
-Supported languages: 
-
-* English
-* Russian
-* Spanish - [Ramón](http://apasionados.es) 
-* French - [Murat](http://wptheme.fr)
-* German - Stefan Meier
+In some themes fixed widgets „jump“ during scrolling, etc. Some CSS changes at your theme will be required in this case.
 
 == Installation ==
 
-1. Follow standard WordPress plugin installation procedure
-2. Activate the plugin through the Plugins menu in WordPress
-3. Go to Appearance -> Widgets, enable "Fixed Widget" option on any active widget
+1. Follow the standard WordPress plugin installation procedure
+2. Activate the plugin through the plugins menu in WordPress
+3. Go to Appearance -> Widgets, enable the "Fixed Widget" option on any active widget
 4. Fine tune plugin parameters on Appearance -> Fixed Widget Options page
 
 
 == Frequently Asked Questions ==
 
-= Why plugin is not working? =
+= Why is the Fixed Widget plugin not working? =
 
 There are several reasons:
 
-1. Javascript errors on page. Commonly caused by buggy plugins. Check javascript console of your browser. If you find errors, try to locate and fix its source. 
+1. Javascript errors on the page. Commonly caused by buggy plugins. Check javascript console of your browser. If you find errors, try to locate and fix its source. 
 2. No `wp_head()` and `wp_footer()` functions in template. Check header.php and footer.php files of your active theme.
 3. Conflicts with other plugins and scripts
 4. CSS incompatibility
 
-= Why the plugin is not working in Chrome (and other Webkit based browsers)? =
+= Is it possible to fix multiple widgets? =
+
+Yes, it is possible to fix more than one widget even if they are located in different sidebars.
+
+= Why is the plugin not working in Chrome (and other Webkit based browsers)? =
 
 Check your CSS files for these two instructions:
 `-webkit-backface-visibility:hidden;
 -webkit-transform: translate3d(0,0,0);`
+
 If found, disable them and see the result.
 
 = How to prevent overlapping with the footer? =
 
-Go to WP admin area, Appearance -> Fixed Widget Options. Here you can define top and bottom margins. Set bottom margin value >= footer height. Check the result.
-If your footer height is changing from page to page it is better to use `Stop ID` option. Here you need to provide html tag id. The position of that html element will determine margin bottom value. For example let's take Twenty Sixteen default theme. Theme's footer container has an id="colophon". In the `Stop ID` option I need to enter just colophon, without any other symbols!
+Go to WP admin area, Appearance -> Fixed Widget Options. Here you can define the top and bottom margins. Set bottom margin value >= footer height. Check the result, please.
+If your footer height is changing from page to page it is better to use the `Stop ID` option. Here you need to provide the HTML tag ID. The position of that HTML element will determine the margin bottom value. For example, let's take the Twenty Sixteen default theme. The theme's footer container has an id="colophon". In the `Stop ID` option I need to enter just the colophon, without any other symbols!
 
 = How to disable the plugin on mobile devices? = 
-There are two options: `Disable Width` and `Disable Height`. They works the same way. If browser window width/height is less then or equals specified value - the plugin is disabled.
+There are two options: `Disable Width` and `Disable Height`. They works the same way. If the browser window width/height is less then or equals specified value, the plugin is disabled. You can also use the [visitor conditions of Advanced Ads](https://wpadvancedads.com/manual/visitor-conditions/) to target specific user groups.
 
+== Screenshots ==
 
-== Other Notes ==
-
-Other Q2W3 plugins:
-
-* [Code Insert Manager](http://wordpress.org/extend/plugins/q2w3-inc-manager/)
-
+1. The Fixed Widget for WordPress plugin in action
 
 == Changelog ==
+
+= 6.0.0-beta-3 =
+
+Please download and test [version 6.0.0, beta 3](https://downloads.wordpress.org/plugin/q2w3-fixed-widget.6.0.0-beta-3.zip).
+
+Version 6.0.0 is a full rewrite of the frontend script. It fixes many edge cases like jumping, reloading, or resizing widgets.
+The rewrite also resolves bad Cumulative Layout Shifts.
+
+Most changes are available when you switch on "Test new version" under Appearance > Fixed Widget Options.
+
+Please test and [let us know](https://wordpress.org/support/plugin/q2w3-fixed-widget/) if you discover any issues.
+
+- added new (and optional) script version that uses `position: sticky` instead of `position: fixed`
+- the frontend script does not need jQuery anymore
+- removed unneeded options that previously helped resolving edge cases
+- "Stop Elements" and "Custom Fixed Elements" now accept any selector, including IDs, Class, and Type selectors.
+- improved option descriptions on the admin page
+- improved behavior for elements higher than the screen – they first stick at the top and scroll to the bottom later
+- removed duplicating widget code
+
+= 5.3.0 =
+
+- fixed option not saving when using the Gutenberg plugin to edit sidebars with block editor
+- disabled scripts and output on AMP pages since sticky widgets are not part of the AMP standard
+- removed explicit translation files since all translations are handled through https://translate.wordpress.org/projects/wp-plugins/q2w3-fixed-widget/
+
+= 5.2.0 =
+
+- Added `q2w3-fixed-widget-sidebar-options` filter for widget options in the frontend.
+
+= 5.1.9 =
+
+* Fixed JavaScript events which were not called in some setups.
+
+= 5.1.8 =
+
+* Fixed JavaScript bug that caused jumping / flickering of fixed widgets.
+
+= 5.1.7 =
+
+* Fixed "a.target.className.indexOf is not a function" bug
+
+= 5.1.6 =
+* linguistic corrections
+* cleanup of the options page 
+
+= 5.1.5 =
+* author change
+
+= 5.1.4 =
+* Added filter "q2w3-fixed-widgets". It allows to filter array of widgets marked as fixed.
+
+= 5.1.3 =
+* Now compatible with WP Page Widget plugin
+
+= 5.1.2 =
+* Now works fine with Shortcodes Ultimate widgets!
+
+= 5.1.1 =
+* Resolves problems with Margin Bottom and Stop ID from version 5.1!
+
+= 5.1 =
+* New options load method!
+* Tested with WordPress 4.9
 
 = 5.0.4 =
 * Compatibility patch for Better Wordpress Minify plugin.
@@ -183,7 +248,6 @@ Other Q2W3 plugins:
 = 1.0.1 =
 * Improved compatibility with Webkit based browsers (like Chrome and Safari).
 * Removed unnecessary CSS.
-
 
 = 1.0 =
 * First public release.

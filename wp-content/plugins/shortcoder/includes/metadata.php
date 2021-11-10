@@ -4,6 +4,8 @@
   * 
   */
 
+if( ! defined( 'ABSPATH' ) ) exit;
+
 class Shortcoder_Metadata{
     
     public static function init(){
@@ -26,6 +28,32 @@ class Shortcoder_Metadata{
             'post_image' => '',
             'post_author' => '',
             'post_date' => '',
+            'post_modified_date' => '',
+            'post_slug' => '',
+            
+            'site_name' => get_bloginfo( 'name' ),
+            'site_description' => get_bloginfo( 'description' ),
+            'site_url' => get_bloginfo( 'url' ),
+            'site_wpurl' => get_bloginfo( 'wpurl' ),
+            'site_charset' => get_bloginfo( 'charset' ),
+            'wp_version' => get_bloginfo( 'version' ),
+            'stylesheet_url' => get_bloginfo( 'stylesheet_url' ),
+            'stylesheet_directory' => get_bloginfo( 'stylesheet_directory' ),
+            'template_url' => get_bloginfo( 'template_url' ),
+            'atom_url' => get_bloginfo( 'atom_url' ),
+            'rss_url' => get_bloginfo( 'rss2_url' ),
+            
+            'day' => date_i18n( 'j' ),
+            'day_lz' => date_i18n( 'd' ),
+            'day_ws' => date_i18n( 'D' ),
+            'day_wf' => date_i18n( 'l' ),
+            'month' => date_i18n( 'n' ),
+            'month_lz' => date_i18n( 'm' ),
+            'month_ws' => date_i18n( 'M' ),
+            'month_wf' => date_i18n( 'F' ),
+            'year' => date_i18n( 'Y' ),
+            'year_2d' => date_i18n( 'y' ),
+            
         );
         
         if( in_the_loop()) {
@@ -49,7 +77,9 @@ class Shortcoder_Metadata{
                 
             }elseif( is_singular() ){
                 
-                $d = self::meta_by_id( $post->ID );
+                if( is_object( $post ) ){
+                    $d = self::meta_by_id( $post->ID );
+                }
             
             }elseif( is_tax() || is_tag() || is_category() ){
                 
@@ -87,7 +117,7 @@ class Shortcoder_Metadata{
                         'url' => get_month_link( get_query_var( 'year' ), get_query_var( 'monthnum' ) )
                     );
                     
-                }elseif( is_year ){
+                }elseif( is_year() ){
                     
                     $d = array(
                         'title' => wp_title( '', false ),
@@ -121,7 +151,12 @@ class Shortcoder_Metadata{
         }
         
         $meta = wp_parse_args( $d, $defaults );
-        $meta = array_map( 'trim', $meta );
+        foreach( $meta as $key => $val ){
+            if( is_string( $val ) ){
+                $val = trim( $val );
+            }
+            $meta[ $key ] = $val;
+        }
         $meta = apply_filters( 'sc_mod_metadata', $meta );
         
         return $meta;
@@ -129,8 +164,6 @@ class Shortcoder_Metadata{
     }
     
     public static function meta_by_id( $id ){
-        
-        global $post;
         
         $d = array();
         
@@ -141,28 +174,37 @@ class Shortcoder_Metadata{
                 'short_url' => wp_get_shortlink( $id ),
                 
                 'post_id' => $id,
-                'post_excerpt' => self::excerpt( $post->post_excerpt, 100 ), // using $post->post_excerpt instead of get_the_excerpt as the_content filter loses shortcode formatting
+                'post_excerpt' => self::excerpt( 100 ),
                 'post_comments_count' => get_comments_number( $id ),
                 'post_image' => self::post_image( $id ),
                 'post_author' => get_the_author(),
-                'post_date' => get_the_date()
+                'post_date' => get_the_date(),
+                'post_modified_date' => get_the_modified_date(),
+                'post_slug' => self::post_slug()
             );
-        }
-        
-        if( $d[ 'short_url' ] == '' ){
-            $d[ 'short_url' ] = $d[ 'url' ];
+
+            if( $d[ 'short_url' ] == '' ){
+                $d[ 'short_url' ] = $d[ 'url' ];
+            }
+
         }
         
         return $d;
         
     }
     
-    public static function excerpt( $excerpt, $length = 250 ){
+    public static function excerpt( $length = 250 ){
         
         global $post;
         
-        $excerpt = ( empty( $excerpt ) ) ? strip_tags( strip_shortcodes( $post->post_content ) ) : $excerpt;
-        return substr( $excerpt, 0, $length );
+        if( !is_object( $post ) ){
+            return '';
+        }
+        
+        $excerpt = $post->post_excerpt; // using $post->post_excerpt instead of get_the_excerpt as the_content filter loses shortcode formatting
+        
+        $excerpt_text = ( empty( $excerpt ) ) ? strip_tags( strip_shortcodes( $post->post_content ) ) : $excerpt;
+        return substr( $excerpt_text, 0, $length );
         
     }
     
@@ -178,6 +220,18 @@ class Shortcoder_Metadata{
         
     }
     
+    public static function post_slug(){
+
+        global $post;
+
+        if( !is_object( $post ) ){
+            return '';
+        }
+
+        return $post->post_name;
+
+    }
+
 }
 
 Shortcoder_Metadata::init();

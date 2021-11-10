@@ -103,3 +103,43 @@ li#toplevel_page_adsplacer div.wp-menu-image:before {
 .adsplacer_settings_promo_link {
     font-size: 18px;
 }
+
+.adsplacer-promo {
+    margin: 20px 0;
+    background: #fff;
+    box-shadow: 0 4px 12px -4px rgba(21, 34, 53, .2);
+    border-radius: 5px;
+    padding: 15px 20px;
+    font-size: 14px;
+    line-height: 1.5;
+    box-sizing: border-box;
+}
+
+.adsplacer-promo__item {
+    position: relative;
+    flex: 1 0 0;
+    margin: 20px 0;
+    padding-left: 35px;
+    box-sizing: border-box;
+}
+
+.adsplacer-promo__item a {
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.adsplacer-promo__item:before {
+    content: '✅';
+    position: absolute;
+    left: 0;
+    box-sizing: border-box;
+}
+
+@media (min-width: 768px) {
+    .adsplacer-promo {
+        display: flex;
+    }
+    .adsplacer-promo__item {
+        margin: 0;
+    }
+}

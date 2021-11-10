@@ -1,11 +1,13 @@
 === Polylang ===
-Contributors: Chouby
+Contributors: Chouby, manooweb, raaaahman, marianne38, sebastienserre
 Donate link: https://polylang.pro
 Tags: multilingual, bilingual, translate, translation, language, multilanguage, international, localization
-Requires at least: 4.4
-Tested up to: 4.9
-Stable tag: 2.2.5
-License: GPLv2 or later
+Requires at least: 5.4
+Tested up to: 5.8
+Requires PHP: 5.6
+Stable tag: 3.1.2
+License: GPLv3 or later
+License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
 Making WordPress multilingual
 
@@ -41,7 +43,7 @@ Don't hesitate to [give your feedback](http://wordpress.org/support/view/plugin-
 
 == Installation ==
 
-1. Make sure you are using WordPress 4.0 or later and that your server is running PHP 5.2.4 or later (same requirement as WordPress itself)
+1. Make sure you are using WordPress 5.1 or later and that your server is running PHP 5.6 or later (same requirement as WordPress itself)
 1. If you tried other multilingual plugins, deactivate them before activating Polylang, otherwise, you may get unexpected results!
 1. Install and activate the plugin as usual from the 'Plugins' menu in WordPress.
 1. Go to the languages settings page and create the languages you need
@@ -76,87 +78,42 @@ Don't hesitate to [give your feedback](http://wordpress.org/support/view/plugin-
 
 == Changelog ==
 
-= 2.2.5 (2017-11-09) =
+= 3.1.2 (2021-10-11) =
 
-* Update plugin updater class to 1.6.15
-* Add $link in cache key of links filters
-* Add support for 'nav_menu' post type in wpml_object_id
-* Fix conflict with Timber (introduced in 2.2.4)
+* Pro: Fix parent page not filtered by language in the block editor since WP 5.6
+* Pro: Fix XLIFF mime type for PHP 7.0 and PHP 7.1
+* Fix settings page displaying the media modules whne no language are defined
+* Enforce Yoast SEO to use dynamic permalinks #882
+* Yoast SEO: Fix static front page and blog page breadcrumb
 
-= 2.2.4 (2017-10-26) =
+= 3.1.1 (2021-08-16) =
 
-* Pro: Fix unknown language not redirected to default when using multiple domains
-* Pro: Fix empty 'lang' query var not deactivating the language query filter
-* Pro: Fix conflict with The Events Calendar and Visual Composer when used together
-* Add new filter `pll_hide_archive_translation_url` #174
-* Add support for undocumented and deprecated WPML functions `wpml_object_id_filter` and `icl_get_current_language`
-* Fix 'orderby' and 'order' in `wpml_active_languages`. Needs WP 4.7+
-* Fix `icl_get_languages` not returning all languages when skip_missing = 0. Props Loïc Blascos
-* Fix `pll_translate_string` not working on admin #178
-* Fix PHP Warning in widget video in WP 4.9
-* Fix query using 'any' post type not filtered per language (introduced in 2.2)
-* Fix untranslatable string in About metabox. Props Farhad Sakhaei
-* Fix error with PHP 7.1 and Duplicate Post. Props Enea Scerba
-* Fix query auto translation not active in ajax requests on frontend
-* Fix query auto translation for 'postname' and 'pagename'
-* Fix terms query auto translation not working for 'include' when no taxonomy is provided (WP 4.5+)
+* Pro: Fix a fatal error with The Events Calendar
+* Allow to remove the cookie with the pll_cookie_expiration filter #905
 
-= 2.2.3 (2017-09-24) =
+= 3.1 (2021-07-27) =
 
-* Fix editor removed on pages (introduced in 2.2.2)
-
-= 2.2.2 (2017-09-22) =
-
-* Pro: Fix Duplicate post button not working when the user meta has been corrupted
-* Fix PHP notice with the plugin Members #175
-* Fix page template select displayed when editing a translated page for posts
-* Fix incompatibility with WP 4.8.2 (placeholder %1$s in prepare)
-
-= 2.2.1 (2017-08-30) =
-
-* Pro: partially refactor REST API classes
-* Pro: Fix duplicate content user meta not removed from DB when uninstalling the plugin
-* Fix strings translations not removed from DB when uninstalling the plugin
-* Fix incorrect translation files loaded in ajax on front when the user is logged in (WP 4.7+)
-* Fix widget language dropdown removed when saving a widget (introduced in 2.2)
-* Fix queries with negative values for the 'cat' parameter (introduced in 2.2 for queries made on frontend)
-* Fix performance issue in combination with some plugins when the language is set from the content (introduced in 2.2)
-
-= 2.2 (2017-08-16) =
-
-* Pro: Add support for the REST API
-* Pro: Add integration with The Events Calendar
-* Pro: Refactor ACF Pro integration for post metas and integrate term metas
-* Pro: Ask confirmation if synchronizing a post overwrites an existing translation
-* Pro: Separate sync post logic from interface
-* Pro: Fix 'Detect browser language' option automatically deactivated
-* Pro: Fix redirect to 404 when the 'page' slug translation includes non alphanumeric characters.
-* Pro: Fix untranslated post type archive slug
-* Pro: Fix ACF taxonomy fields not copied when the taxonomy is not translated #156
-* Pro: Fix fatal error with ACF4
-* Support a different content text direction in admin #45
-* Add support for wildcards and 'copy-once' attribute in wpml-config.xml
-* Add minimal support for the filters 'wpml_display_language_names' and 'icl_ls_languages'
-* Improve compatibility with the plugin WordPress MU Domain Mapping #116
-* Improve speed of the sticky posts filter #41
-* Remove redirect_lang option for multiple domains and subdomains
-* Use secure cookie when using SSL
-* Allow to copy/sync term metas with the filter 'pll_copy_term_metas'
-* Filter ajax requests in term.php according to the term language
-* Add error message in customizer when setting an untranslated static front page #47
-* Load static page class only if we are using a static front page
-* Refactor parse_query filters to use the same code on frontend and admin
-* Don't use add_language_to_link in filters
-* Move ajaxPrefilter footer script on top
-* Use wp_doing_ajax() instead of DOING_AJAX constant
-* Fix queries custom tax not excluded from language filter on admin
-* Fix WP translation not loaded when the language is set from the content on multisite.
-* Fix the list of core post types in PLL_OLT_Manager for WP 4.7+
-* Fix post name and tag slug incorrectly sanitized for German and Danish
-* Fix lang attribute in dropdowns
-* Fix wpml_permalink filter #139
-* Fix WPML constants undefined on backend #151
-* Fix a conflict with the plugin Custom Permalinks #143
-* Fix menu location unexpectedly unset
+* Add compatibility with WordPress 5.8
+* Raise Minimum WordPress version to 5.4
+* Pro: Allow to filter blocks by language in the widget block editor
+* Pro: Allow to export and import XLIFF files for string translations
+* Pro: Add the language switcher in the navigation block (experimental)
+* Pro: Replace dashicons by svg icons in the block editor
+* Pro: The Events Calendar: Add compatibility with Views V2 (only for sites using only one domain)
+* Pro: Fix + icon displayed in the block editor sidebar when the user cannot create a translation
+* Add a warning section to the site health for posts and terms without languages #825
+* Require the simplexml extension in the site health if a wpml-config.xml is found #827
+* Remove the information about the WPML compabitility mode in settings #843
+* The browser preferred language detection is now deactivated by default
+* The media are now untranslated by default
+* Highlight the language filter in the admin toolbar when it's active #821
+* Allow to query comments in multiple languages (just as posts and terms) #840
+* Don't disable the translation input field in the classic metabox #841 Props Onatcer
+* Optimize all images including flags #848 Props lowwebtech
+* Don't redirect if WordPress doesn't validate the redirect url to avoid redirects to /wp-admin/ #879
+* Fix media appearing to have a language after the language is changed in the media library grid view  #807
+* Fix media not all deleted when bulk deleting from the grid view of the media library #830
+* Fix when more than one language switcher are added to the same menu #853
+* Fix PHP notice when adding a CPT archive link to a menu #868 Props davidwebca
 
 See [changelog.txt](https://plugins.svn.wordpress.org/polylang/trunk/changelog.txt) for older changelog

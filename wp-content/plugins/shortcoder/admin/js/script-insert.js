@@ -1,114 +1,195 @@
 (function($){
-    
 $(document).ready(function(){
-    
-    var last_sort = 'desc';
-    
-    var send_editor = function( content = '' ){
-        if( typeof parent.send_to_editor === 'function' ){
-            parent.send_to_editor( content );
+
+    var send_editor = function(content){
+
+        if(typeof parent.sc_block_editor_content === 'function'){
+            if(parent.sc_block_editor_content(content)){
+                return true;
+            }
+        }
+
+        if(typeof parent.sc_block_inline_insert === 'function'){
+            if(parent.sc_block_inline_insert(content)){
+                return true;
+            }
+        }
+
+        if(typeof parent.send_to_editor === 'function'){
+            parent.send_to_editor(content);
         }else{
-            alert( 'Editor does not exist. Cannot insert content !' );
+            alert('Editor does not exist. Cannot insert shortcode !');
         }
+
     }
-    
+
     var close_window = function(){
-        if( typeof parent.tb_remove === 'function' ){
-            parent.tb_remove();
+        if( typeof parent.sc_close_insert === 'function' ){
+            parent.sc_close_insert();
         }
     }
-    
-    var sort = function( ele, orderby ){
-        var total = ele.length;
-        while( total ){
-            ele.each(function(){
-                var $cur = $(this);
-                var $next = $cur.next();
-                if( $next.length ){
-                    var cur_name = $cur.attr( 'data-name' ).toLowerCase();
-                    var nxt_name = $next.attr( 'data-name' ).toLowerCase();
-                    if( ( orderby == 'asc' && cur_name > nxt_name ) || ( orderby == 'desc' && cur_name < nxt_name ) ){
-                        $next.after( $cur );
-                    }
-                }
-            });
-            total--;
-        }
-    }
-    
-    $('.sc_shortcode_name').append('<span class="sc_toggle"></span>');
-    
-    $( document ).on( 'click', '.sc_insert', function(){
-        
+
+    var copy_to_clipboard = function(str){
+        var el = document.createElement('textarea');
+        el.value = str;
+        el.setAttribute('readonly', '');
+        el.style.position = 'absolute';
+        el.style.left = '-9999px';
+        document.body.appendChild(el);
+        el.select();
+        document.execCommand('copy');
+        document.body.removeChild(el);
+    };
+
+    var generate_sc = function(id){
+        var $wrap = $('.sc_wrap[data-id="' + id + '"]');
+        var name = $wrap.attr('data-name');
+        var enclosed = $wrap.attr('data-enclosed');
         var params = '';
-        var scname = $(this).closest( '.sc_shortcode' ).attr( 'data-name' );
-        var sc = '';
-        
-        $(this).parent().children().find('input[type="text"]').each(function(){
+
+        $wrap.find('.sc_param').each(function(){
             if($(this).val() != ''){
                 attr = $(this).attr('data-param');
                 val = $(this).val().replace( /\"/g, '' );
                 params += attr + '="' + val + '" ';
             }
         });
+
+        sc = '[sc name="' + name + '" ' + params + ']';
+        sc += '[/sc]';
+
+        return sc;
+
+    }
+
+    var set_shortcode = function(shortcode){
+
+        var re_attrs_text = /\[sc ([^\]]*)+\]/g;
+        var re_attrs = /(\w+?)="(.+?)"/g;
+
+        var attributes_text_matches = re_attrs_text.exec(shortcode);
+
+        if(attributes_text_matches.length < 1){
+            return false;
+        }
+
+        var attributes_text = attributes_text_matches[1];
+        var attributes = {};
+
+        while(true){
+            var attributes_matches = re_attrs.exec(attributes_text);
+
+            if(attributes_matches !== null){
+                var name = attributes_matches[1];
+                var val = attributes_matches[2];
+                attributes[name] = val;
+            }else{
+                break;
+            }
+        }
+
+        if(!('name' in attributes)){
+            return false;
+        }
+
+        var sc_name = attributes['name'];
+        var $sc_wrap = $('.sc_wrap[data-name="' + sc_name + '"]');
+
+        if($sc_wrap.length == 0){
+            return false;
+        }
+
+        var $sc_options = $sc_wrap.find('.sc_options');
+        var $sc_head = $sc_wrap.find('.sc_head');
+
+        delete attributes['name'];
+
+        for (var attribute in attributes) {
+            if (attributes.hasOwnProperty(attribute)) {
+                var attr_val = attributes[attribute];
+                $sc_options.find('input[data-param="' + attribute + '"]').val(attr_val);
+            }
+        }
+
+        if(!$sc_wrap.hasClass('open')){
+            $sc_head.trigger('click');
+        }
+
+        $sc_wrap[0].scrollIntoView();
+
+    }
+
+    $('.sc_insert').on('click', function(){
+        var sc_id = $(this).closest('.sc_wrap').attr('data-id');
+        var sc = generate_sc(sc_id);
         
-        sc = '[sc name="' + scname + '" ' + params + ']';
-        send_editor( sc );
+        send_editor(sc);
         close_window();
-        
     });
     
-    $( document ).on( 'click', '.sc_quick_insert', function(){
-        
-        var scname = $(this).closest( '.sc_shortcode' ).attr( 'data-name' );
-        var sc = '[sc name="' + scname + '"]';
-        
-        send_editor( sc );
+    $('.sc_copy').on('click', function(){
+        var sc_id = $(this).closest('.sc_wrap').attr('data-id');
+        var sc = generate_sc(sc_id);
+
+        copy_to_clipboard(sc);
         close_window();
-        
     });
-    
-    $( document ).on( 'click', '.sc_shortcode_name', function(e){
-        $('.sc_params').slideUp();
-        if($(this).next('.sc_params').is(':visible')){
-            $(this).next('.sc_params').slideUp();
+
+    $('.sc_head').on('click', function(){
+        $('.sc_options').slideUp();
+        $('.sc_wrap').removeClass('open');
+        if($(this).next('.sc_options').is(':visible')){
+            $(this).next().slideUp();
         }else{
-            $(this).next('.sc_params').slideDown();
+            $(this).next().slideDown();
+            $(this).closest('.sc_wrap').addClass('open');
         }
     });
-    
-    $( document ).on( 'change', '.coffee_amt', function(){
-        var btn = $( '.buy_coffee_btn' );
-        btn.attr( 'href', btn.data( 'link' ) + $(this).val() );
-    });
-    
-    $( document ).on( 'click', '.sort_btn', function(){
-        last_sort = ( last_sort == 'asc' ) ? 'desc' : 'asc';
-        sort( $( '.sc_shortcode' ), last_sort );
-    });
-    
-    $( document ).on( 'keyup', '.search_box', function(){
+
+    $('.sc_search').on('keyup search', function(){
+
         var re = new RegExp($(this).val(), 'gi');
-        $('.sc_wrap .sc_shortcode').each(function(){
-            var name = $(this).attr('data-name');
-            if( name.match(re) === null ){
+
+        $('.sc_wrap').each(function(){
+            var name = $(this).find('.sc_head h3').text();
+            if(name.match(re) === null){
                 $(this).hide();
             }else{
                 $(this).show();
             }
         });
-        
-        var visible = $('.sc_wrap .sc_shortcode:visible').length;
-        var $no_scs_msg = $('.sc_wrap').find('p');
+
+        var $no_scs_msg = $('.sc_search_none');
+        var visible = $('.sc_wrap:visible').length;
+
         if( visible == 0 ){
-            if( $no_scs_msg.length == 0 ){
-                $('.sc_wrap').append( '<p align="center"><i>No shortcodes match search term !</i></p>' );
-            }
+            $no_scs_msg.show();
         }else{
-            $no_scs_msg.remove();
+            $no_scs_msg.hide();
         }
+
     });
-    
+
+    $('.cfe_amt').on('click', function(){
+        var $btn = $(this).closest('.cfe_form').find('.cfe_btn');
+        $btn.attr('href', $btn.data('link') + $(this).val());
+    });
+
+    $('.note').on('click', function(){
+        $(this).find('table').slideToggle();
+    });
+
+    window.addEventListener('message', function(e){
+        var key = e.message ? 'message' : 'data';
+        var data = e[key];
+
+        if(data == false){
+            return true;
+        }
+
+        set_shortcode(data);
+
+    }, false);
+
 });
-    
 })( jQuery );

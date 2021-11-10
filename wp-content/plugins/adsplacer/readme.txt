@@ -1,8 +1,10 @@
-=== AdsPlace'r ===
-Contributors: mojwp, kaliyan
-Tags: ads, adsense, advertising, affiliate, iphone, mobile, shortcode, shortcodes
-Requires at least: 4.2.3
-Tested up to: 4.7.4
+=== AdsPlace'r - Ad Manager, Inserter, AdSense Ads ===
+Contributors: wpshopbiz, mojwp
+Donate link: https://wpshop.ru/donate
+Tags: ads, ad, manager, ad-manager, inserter, adsense, advertising, affiliate, iphone, mobile, shortcode, shortcodes
+Requires at least: 5.3
+Tested up to: 5.7
+Requires PHP: 5.6
 Stable tag: trunk
 
 Put different advertising blocks for the computer and mobile OS users. Earn more with AdSense and advertisement.
@@ -12,7 +14,7 @@ Put different advertising blocks for the computer and mobile OS users. Earn more
 
 By means of the AdsPlace’r you will be able to show different units of advertisement to visitors of your site, who use PC or mobile gadget (smartphone or tablet).
 
-As a result your earnings from AdSense or any other advertising units will increase, due to the more suitable size of them. For the PC users you will deliver the advertising units which are fixed by the size (728*90, 300*250 etc). For the users of the mobile OS you will deliver the adaptive advertising units.
+As a result your earnings from AdSense or any other advertising units will increase, due to the more suitable size of them. For the PC users you will deliver the advertising units which are fixed by the size (728x90, 300x250 etc). For the users of the mobile OS you will deliver the adaptive advertising units.
 
 All the settings are performed by the administrative panel of the site and you do not need to correct a code of the samples’ files.
 
@@ -25,13 +27,13 @@ The AdsPlace’r plugin inserts your advertising units automatically:
 
 In a single post, you can control the output area of advertising.
 
-Our program is very simple in use and does not need any settings. You just need to place the codes of the advertising networks and then just track how your income is increasing due to more exact positioning of the advertisement for the PC and mobile OS visitors.
+Our ad manager is very simple in use and does not need any settings. You just need to insert the codes of the advertising networks and then just track how your income is increasing due to more exact positioning of the advertisement for the PC and mobile OS visitors.
 
 = Русский =
 
 При помощи AdsPlace’r вы сможете показывать разные блоки рекламы посетителям своего сайта, которые зашли с PC и которые зашли с мобильного гаджета (смартфон или планшет).
 
-В результате у вас возрастет заработок с AdSense или других рекламных блоков, за счет более подходящих по размеру объявлений. Для пользователей с PC вы поставите фиксированные по размеру рекламные блоки (728*90, 300*250 и т.д.), а для пользователей с мобильных ОС вы поставите адаптивные рекламные блоки.
+В результате у вас возрастет заработок с AdSense или других рекламных блоков, за счет более подходящих по размеру объявлений. Для пользователей с PC вы поставите фиксированные по размеру рекламные блоки (728x90, 300x250 и т.д.), а для пользователей с мобильных ОС вы поставите адаптивные рекламные блоки.
 
 Все настройки выполняются из административной панели сайта и вам не нужно править код файлов шаблона.
 
@@ -88,6 +90,15 @@ Below there is an opportunity to use the sortcodes for to insert the advertising
 По ссылке http://mojwp.ru/adsplacer-cache.html вы найдете инструкции для WP Super Cache, Hyper Cache, W3 Total Cache и Quick Cache (ZenCache).
 
 == Changelog ==
+
+= 1.1.5 =
+Tested up to WP 5.7
+
+= 1.1.4 =
+Tested up to WP 5.3
+
+= 1.1.3 =
+Tested up to WP 5.1.1
 
 = 1.1.2 =
 Tested up to WP 4.7.4

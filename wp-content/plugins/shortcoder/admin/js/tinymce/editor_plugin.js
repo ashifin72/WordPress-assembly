@@ -3,20 +3,21 @@
 */
 
 (function() {
-    
+
     tinymce.create( 'tinymce.plugins.SCButton',{
     
-        init : function( ed, url ){  
+        init : function(ed, url){
+            var url = url.replace('/js/tinymce', '');
             ed.addButton( 'shortcoder', {
                 title : 'Insert shortcodes created using Shortcoder',
-                image : url + '/icon.png',
-                onclick : function() {
-                    if( typeof sc_show_insert !== 'undefined' ) sc_show_insert();
+                image : url + '/images/shortcoder.svg',
+                onclick : function(){
+                    if(typeof sc_show_insert !== 'undefined') sc_show_insert();
                 }
-            }); 
+            });
         },
-        
-        getInfo : function() {
+
+        getInfo : function(){
             return {
                 longname : 'Shortcoder',
                 author : 'Aakash Chakravarthy',
@@ -27,7 +28,7 @@
         }
 
     });
-    
+
     tinymce.PluginManager.add( 'shortcoder', tinymce.plugins.SCButton );
-    
+
 })();

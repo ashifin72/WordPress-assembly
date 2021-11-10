@@ -1,219 +1,317 @@
 (function($){
 $(document).ready(function(){
-    
-    var delete_ctext = 'Are you sure want to delete this shortcode ?';
-    var last_sort = 'desc';
-    
-    var sort = function( ele, orderby ){
-        var total = ele.length;
-        while( total ){
-            ele.each(function(){
-                var $cur = $(this);
-                var $next = $cur.next();
-                if( $next.length ){
-                    var cur_name = $cur.attr( 'data-name' ).toLowerCase();
-                    var nxt_name = $next.attr( 'data-name' ).toLowerCase();
-                    if( ( orderby == 'asc' && cur_name > nxt_name ) || ( orderby == 'desc' && cur_name < nxt_name ) ){
-                        $next.after( $cur );
-                    }
-                }
-            });
-            total--;
+
+    var init = function(){
+
+        if(typeof window.SC_EDITOR !== 'undefined' && typeof window.SC_EDITOR.active !== 'undefined' && window.SC_EDITOR.active == 'code'){
+
+            var codemirror_loaded = load_codemirror();
+
+            if(!codemirror_loaded){
+                $('.sc_editor_toolbar').append('<p>Unable to load code editor. Please check browser console (press Ctrl+Shift+J) for errors or try deactivating any code editor related plugin/themes.</p>');
+            }
+
+            $('.sc_editor_toolbar').appendTo('.sc_cm_menu');
+
+        }else{
+            $('.sc_editor_toolbar').appendTo('.wp-media-buttons');
+        }
+
+        if(typeof window.SC_VARS !== 'undefined'){
+
+            if(SC_VARS['screen']['base'] == 'edit'){
+                var version = '<small>v' + SC_VARS['sc_version'] + '</small>';
+                $('.wp-heading-inline').append(version);
+                add_top_import_export_btn();
+            }
+
+            add_top_coffee_btn();
+        }
+
+        $('.sc_params_list').appendTo('body');
+
+    }
+
+    var set_sc_preview_text = function(name){
+        $('.sc_preview_text').text('[sc name="' + name + '"][/sc]');
+    }
+
+    var insert_in_editor = function(data){
+        if(window.SC_EDITOR.active == 'code'){
+            var doc = window.sc_cm.getDoc();
+            doc.replaceRange(data, doc.getCursor());
+        }else{
+            send_to_editor(data);
         }
     }
-    
-    $( document ).on( 'click', '.sc_delete', function(e){
-        
-        e.preventDefault();
-        
-        var del_btn = $(this);
-        var href = del_btn.attr( 'href' );
-        var confirm_user = confirm( delete_ctext );
-        
-        if( confirm_user ){
-            
-            var ajax = $.get( href );
-            del_btn.addClass( 'spin' );
-            
-            ajax.done(function( data ){
-                if( data.search( 'DELETED' ) != -1 ){
-                    del_btn.closest( 'li' ).fadeOut( 'slow', function(){
-                        $(this).remove();
-                    });
-                }else{
-                    alert( 'Delete failed ! - ' + data );
-                }
-            });
-            
-            ajax.fail(function(){
-                alert( 'Auth failed !' );
-            });
-            
+
+    var copy_to_clipboard = function(str){
+        var el = document.createElement('textarea');
+        el.value = str;
+        el.setAttribute('readonly', '');
+        el.style.position = 'absolute';
+        el.style.left = '-9999px';
+        document.body.appendChild(el);
+        el.select();
+        document.execCommand('copy');
+        document.body.removeChild(el);
+    };
+
+    var load_codemirror = function(){
+
+        if(typeof window.SC_CODEMIRROR === 'undefined'){
+            console.error('Shortcoder: Codemirror settings are not loaded');
+            return false;
         }
-        
-    });
-    
-    $( document ).on( 'click', '.sc_delete_ep', function(e){
-        
-        e.preventDefault();
-        
-        var $delete_btn = $(this);
-        var href = $delete_btn.attr( 'href' );
-        var confirm_user = confirm( delete_ctext );
-        
-        if( confirm_user ){
-            
-            var ajax = $.get( href );
-            $delete_btn.addClass( 'spin' );
-            
-            ajax.done(function( data ){
-                if( data.search( 'DELETED' ) != -1 ){
-                    var back_href = $( '.sc_back_btn' ).attr( 'href' );
-                    window.location = back_href + '&msg=3';
-                }else{
-                    alert( 'Delete failed ! - ' + data );
-                }
-            });
-            
-            ajax.fail(function(){
-                alert( 'Auth failed !' );
-            });
-            
-            $delete_btn.removeClass( 'spin' );
-            
+
+        if(typeof window.wp === 'undefined' || typeof window.wp.codeEditor === 'undefined'){
+            console.error('Shortcoder: codeEditor namespace is not available');
+            return false;
         }
-        
-    });
-    
-    $( document ).on( 'click', '.sc_copy', function(e){
-        
-        e.preventDefault();
-        
-        var btn = $(this);
-        var box = btn.closest( 'li' ).find( '.sc_copy_box' );
-        
-        $( '.sc_copy_box' ).not( box ).hide();
-        
-        box.fadeToggle();
-        box.select();
-        
-    });
-    
-    $(window).load(function(){
-        $( '.wp-media-buttons' ).append(function(){
-            return '<button class="button button-primary sc_insert_params"><span class="dashicons dashicons-plus"></span> Insert shortcode paramerters <span class="dashicons dashicons-arrow-down"></span></button>';
+
+        var sc_mode_loaded = load_cm_sc_mode();
+        var mode = sc_mode_loaded ? 'sc_mode' : 'htmlmixed';
+
+        wp.codeEditor.defaultSettings.codemirror['mode'] = mode;
+
+        var editor = wp.codeEditor.initialize(document.getElementById('sc_content'), window.SC_CODEMIRROR);
+
+        editor.codemirror.setSize( null, 500 );
+        editor.codemirror.on('change', function(){
+            editor.codemirror.save();
         });
-        $( '.params_wrap' ).appendTo( 'body' );
-        $( '.quicktags-toolbar' ).append(function(){
-            return '<a href="#" class="ed_button button button-small fright sc_enable_vedit" title="Enable visual editor"><span class="dashicons dashicons-visibility"></span> Enable visual editor</a>';
-        });
+
+        window.sc_cm = editor.codemirror;
+
+        return true;
+
+    }
+
+    var load_cm_sc_mode = function(){
+
+        if(typeof wp.CodeMirror === 'undefined'){
+            console.error('Shortcoder: CodeMirror library is not loaded/available');
+            return false;
+        }
+
+        if(typeof wp.CodeMirror.overlayMode === 'undefined'){
+            console.error('Shortcoder: CodeMirror overlay method is not available');
+            return false;
+        }
+
+        try{
+            wp.CodeMirror.defineMode('sc_mode', function(config, parserConfig){
+                var sc_overlay = {
+                    token: function(stream, state){
+                        if(stream.match(/\$\$[a-z0-9A-Z:_]+\$\$/)){
+                            return 'number sc_param';
+                        }
+                        if(stream.match(/%%.*?%%/)){
+                            return 'atom sc_param';
+                        }
+                        if(stream.match(/\[(.+?)?\](?:(.+?)?\[\/\])?/)){
+                            return 'string sc_param';
+                        }
+                        stream.next();
+                    }
+                };
+                return wp.CodeMirror.overlayMode(wp.CodeMirror.getMode(config, parserConfig.backdrop || 'htmlmixed'), sc_overlay);
+            });
+        }catch(error){
+            console.error('Shortcoder: Unable to load shortcoder mode.', error);
+            return false;
+        }
+
+        return true;
+
+    }
+
+    var close_params_list = function(){
+        $('.sc_params_list').hide();
+    }
+
+    var add_top_coffee_btn = function(){
+
+        $('#screen-meta-links').prepend('<div class="screen-meta-toggle cfe_top_link"><a class="show-settings button" href="https://www.paypal.me/vaakash/" target="_blank">Buy me a Coffee</a></div>');
+
+    }
+
+    var add_top_import_export_btn = function(){
+
+        $('#screen-meta-links').prepend('<div class="screen-meta-toggle ie_top_link hide-if-no-js"><button aria-controls="import-export-tab" aria-expanded="false" class="show-settings button">Import / Export</button></div>');
+
+        $('#screen-meta').append('<div id="import-export-tab" class="hidden"></div>');
+
+        $('#ie_content > div').appendTo('#import-export-tab');
+
+    }
+
+    var show_promo_slide = function(){
+
+        var slides = $('.promo_slide').length;
+        
+        if(!slides){
+            return;
+        }
+        var rand_slide = Math.floor(Math.random() * slides);
+        sc_current_slide(rand_slide);
+
+    }
+
+    $('#post_name').on('change keyup', function(){
+        set_sc_preview_text($(this).val());
     });
-    
-    $( document ).on( 'click', '.sc_insert_params', function(e){
+
+    $('.sc_editor').on('focus', function(){
+        window.sc_old_editor = $(this).val();
+    }).on('change', function(e){
+
+        new_editor = $(this).val();
+        response = confirm(SC_VARS.text_editor_switch_notice);
+
+        if(!response){
+            e.preventDefault();
+            $(this).val(window.sc_old_editor);
+            return false;
+        }
+
+        window.location = window.location + '&editor=' + $(this).val();
+
+    });
+
+    $('.sc_insert_param').on('click', function(e){
         
         e.preventDefault();
         
         var offset = $(this).offset();
         var mtop = offset.top + $(this).outerHeight();
-        
-        $( '.params_wrap' ).css({
+
+        $('.sc_params_list').css({
             top: mtop,
             left: offset.left
         }).toggle();
+
     });
-    
-    $( document ).on( 'click', '.cp_btn', function(){
-        
-        var $cp_box = $( '.cp_box' );
-        var $cp_info = $( '.cp_info' );
+
+    $('.sc_wp_params li').on('click', function(){
+        insert_in_editor('$$' + $(this).data('id') + '$$');
+        close_params_list();
+    });
+
+    $('.sc_cp_btn').on('click', function(){
+
+        var $cp_box = $('.sc_cp_box');
+        var $cp_default = $('.sc_cp_default');
+        var $cp_info = $('.sc_cp_info');
         var param_val = $cp_box.val().trim();
-        
+        var default_val = $cp_default.val().trim();
+
         if( param_val != '' && $cp_box[0].checkValidity() ){
-            send_to_editor( '%%' + param_val + '%%' );
-            $cp_info.removeClass( 'red' );
-            $( '.params_wrap' ).hide();
-        }else{
-            $cp_info.addClass( 'red' );
-        }
-        
-    });
-    
-    $( document ).on( 'click', '.wp_params li', function(){
-        
-        send_to_editor( '$$' + $(this).data( 'id' ) + '$$' );
-        $( '.params_wrap' ).hide();
-        
-    });
-    
-    $( document ).on( 'change', '.coffee_amt', function(){
-        var btn = $( '.buy_coffee_btn' );
-        btn.attr( 'href', btn.data( 'link' ) + $(this).val() );
-    });
-    
-    $( document ).on( 'click', '.sort_btn', function(){
-        last_sort = ( last_sort == 'asc' ) ? 'desc' : 'asc';
-        sort( $( '.sc_list li' ), last_sort );
-        $( '.sort_icon' ).toggleClass( 'dashicons-arrow-down-alt' );
-        $( '.sort_icon' ).toggleClass( 'dashicons-arrow-up-alt' );
-    });
-    
-    $( document ).on( 'change', '#import', function(){
-        if( !confirm( $( '.import_desc' ).text() ) ){
-            return false;
-        }
-        
-        if( confirm( $( '.import_desc2' ).text() ) ){
-            $( '#fresh_import' ).prop( 'checked', true );
-        }else{
-            $( '#fresh_import' ).prop( 'checked', false );
-        }
-        
-        $( '#import_form' ).submit();
-    });
-    
-    $( document ).on( 'click', '.search_btn', function(e){
-        var $search_box = $(this).find('.search_box');
-        if(e.target === $search_box[0]){
-            return false;
-        }
-        $(this).toggleClass('active');
-        $search_box.focus();
-    });
-    
-    $( document ).on( 'keyup', '.search_box', function(){
-        var search_term = $(this).val();
-        var re = new RegExp(search_term, 'gi');
-        $('.sc_list li').each(function(){
-            var name = $(this).attr('data-name');
-            if(name.match(re) === null){
-                $(this).hide();
+
+            var the_code = '';
+            if(default_val == ''){
+                the_code = '%%' + param_val + '%%';
             }else{
-                $(this).show();
+                the_code = '%%' + param_val + ':' + default_val + '%%';
+            }
+
+            insert_in_editor(the_code);
+            $cp_info.removeClass('red');
+            close_params_list();
+        }else{
+            $cp_info.addClass('red');
+        }
+
+    });
+    
+    $('.sc_cf_btn').on('click', function(){
+
+        var $cf_box = $('.sc_cf_box');
+        var $cf_info = $('.sc_cf_info');
+        var param_val = $cf_box.val().trim();
+
+        if( param_val != '' && $cf_box[0].checkValidity() ){
+            insert_in_editor('$$custom_field:' + param_val + '$$');
+            $cf_info.removeClass('red');
+            close_params_list();
+        }else{
+            $cf_info.addClass('red');
+        }
+
+    });
+
+    $('.sc_copy').on('click', function(){
+        copy_to_clipboard($('.sc_preview_text').text());
+        $this = $(this);
+        $this.addClass('copied');
+        setTimeout(function() {
+            $this.removeClass('copied');
+        }, 3000);
+    })
+
+    $('.sc_changelog .dismiss_btn').on('click', function(){
+        var url = SC_VARS.ajax_url + '?action=sc_admin_ajax&do=close_changelog';
+        $.get(url, function( data ){
+            if(data.search( /done/g ) == -1){
+                $( '.sc_changelog article' ).html('Failed to close window. <a href="' + url + '" target="_blank">Please click here to close</a>');
+            }else{
+                $( '.sc_changelog' ).fadeOut();
             }
         });
-        
-        if(search_term){
-            $(this).parent().addClass('filtered');
-        }else{
-            $(this).parent().removeClass('filtered');
-        }
-        
-        var visible = $('.sc_list li:visible').length;
-        var $no_scs_msg = $('.sc_list').find('p');
-        if( visible == 0 ){
-            if( $no_scs_msg.length == 0 ){
-                $('.sc_list').append( '<p align="center" class="search_empty_msg"><i>No shortcodes match search term !</i></p>' );
-            }
-        }else{
-            $no_scs_msg.remove();
-        }
-        
     });
-    
-    $( document ).on( 'click', '.sc_enable_vedit', function(e){
+
+    $('.cfe_amt').on('click', function(){
+        var $btn = $(this).closest('.cfe_form').find('.cfe_btn');
+        $btn.attr('href', $btn.data('link') + $(this).val());
+    });
+
+    $('.subscribe_btn').click(function(e){
         e.preventDefault();
-        window.location = window.location + '&visual_edit=1';
+        var action = $(this).parent().data('action');
+        $.ajax({
+            type: 'get',
+            url: action,
+            cache: false,
+            dataType: 'jsonp',
+            data: {
+                'EMAIL': $('.subscribe_email_box').val()
+            },
+            success : function(data) {
+            }
+        });
+        $('.subscribe_confirm').show();
     });
-    
+
+    init();
+
 });
 })( jQuery );
+
+var promo_slide_index = 1;
+
+function sc_next_promo_slide(n, event) {
+    event.preventDefault();
+    sc_promo_slide(promo_slide_index += n);
+}
+
+function sc_current_slide(n) {
+    sc_promo_slide(promo_slide_index = n);
+}
+
+function sc_promo_slide(n) {
+    var slides = document.getElementsByClassName('promo_slide');
+    if(slides.length == 0){
+        return;
+    }
+    var i;
+    if (n > slides.length) {
+        promo_slide_index = 1
+    }
+    if (n < 1) {
+        promo_slide_index = slides.length
+    }
+    for (i = 0; i < slides.length; i++) {
+        slides[i].style.display = 'none';
+    }
+    slides[promo_slide_index - 1].style.display = 'block';
+}

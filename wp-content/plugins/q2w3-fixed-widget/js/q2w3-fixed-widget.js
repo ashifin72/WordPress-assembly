@@ -1,9 +1,15 @@
 if ( typeof q2w3_sidebar_options != 'undefined' && q2w3_sidebar_options.length > 0 ) {
 	if ( window.jQuery ) {
 		if ( q2w3_sidebar_options[0].window_load_hook ) {
-			jQuery(window).load(q2w3_sidebar_init());
+			jQuery(window).load(q2w3_sidebar_init);
 		} else {
-			jQuery(document).ready(q2w3_sidebar_init());
+			if (document.readyState!='loading'){
+				q2w3_sidebar_init();
+			}
+			else{
+				//jQuery(document).ready(q2w3_sidebar_init);
+				document.addEventListener('DOMContentLoaded', q2w3_sidebar_init);
+			}
 		}  
 	} else {
 		console.log('jQuery is not loaded!');
@@ -34,9 +40,8 @@ function q2w3_sidebar_init() {
 		q2w3Refresh = false
 		var htmlObserver = new MutationObserver(function(mutations) {  
 			mutations.forEach( function(mutation) {
-				if ( q2w3_exclude_mutations_array(q2w3_sidebar_options).indexOf(mutation.target.id) == -1 && mutation.target.className.indexOf('q2w3-fixed-widget-container') == -1 ) {
+				if ( q2w3_exclude_mutations_array(q2w3_sidebar_options).indexOf(mutation.target.id) == -1 && (!mutation.target.className || typeof(mutation.target.className.indexOf) != "function" || mutation.target.className.indexOf('q2w3-fixed-widget-container') == -1 ) ) {
 					q2w3Refresh = true;
-					//console.log('Mutation detected!');
 				}
 			});
 	    });

@@ -1,11 +1,11 @@
 <?php
 /**
 	Plugin Name: AdsPlace'r
-	Plugin URI: http://mojwp.ru/
+	Plugin URI: https://wp-r.ru/plaginy/adsplacer-pro.html
 	Description: Manage ad blocks in the articles separately for visitors to the PC and mobile OS
-	Author: mojWP
-	Version: 1.1.2
-	Author URI: http://mojwp.ru/
+	Author: WP-R
+	Version: 1.1.5
+	Author URI: https://wp-r.ru/
 	Text Domain: adsplacer
 	Domain Path: /languages
 	License: GPL
@@ -13,7 +13,7 @@
 
 defined('ABSPATH') or die('No script kiddies please!');
 
-define('ADSPLACER_VERSION', '1.1.2');
+define('ADSPLACER_VERSION', '1.1.5');
 define('ADSPLACER_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('ADSPLACER_PLUGIN_URL', plugin_dir_url(__FILE__));
 
@@ -146,7 +146,7 @@ class AdsPlacer {
 		add_submenu_page('adsplacer', 'AdsPlace\'r — '.__('Settings', 'adsplacer'), __('Settings', 'adsplacer'), 'manage_options', 'adsplacer', array($this, 'settings_html'));
 		add_submenu_page('adsplacer', 'AdsPlace\'r — '.__('Instruction', 'adsplacer'), __('Instruction', 'adsplacer'), 'manage_options', 'adsplacer_support', array($this, 'support_html'));
 		if(get_locale() == 'ru_RU')
-			$submenu['adsplacer'][] = array('AdsPlace\'r Pro<span class="update-plugins" aria-hidden="true" style="margin: -2px 0 -3px 2px;background-color: rgba(0, 0, 0, 0); width: 20px; height: 20px;"><svg width="20" height="20" viewBox="0 0 1792 1792" xmlns="http://www.w3.org/2000/svg" style="display: block;"><path fill="currentColor" d="M1728 647q0 22-26 48l-363 354 86 500q1 7 1 20 0 21-10.5 35.5t-30.5 14.5q-19 0-40-12l-449-236-449 236q-22 12-40 12-21 0-31.5-14.5t-10.5-35.5q0-6 2-20l86-500-364-354q-25-27-25-48 0-37 56-46l502-73 225-455q19-41 49-41t49 41l225 455 502 73q56 9 56 46z" style="fill: rgb(213, 78, 33);"></path></svg></span>', 'manage_options', 'https://wp-r.ru/?p=365&ref_prid=974a825f5a554335d4f146201efa1a96');
+			$submenu['adsplacer'][] = array('AdsPlace\'r Pro<span class="update-plugins" aria-hidden="true" style="margin: -2px 0 -3px 2px;background-color: rgba(0, 0, 0, 0); width: 20px; height: 20px;"><svg width="20" height="20" viewBox="0 0 1792 1792" xmlns="http://www.w3.org/2000/svg" style="display: block;"><path fill="currentColor" d="M1728 647q0 22-26 48l-363 354 86 500q1 7 1 20 0 21-10.5 35.5t-30.5 14.5q-19 0-40-12l-449-236-449 236q-22 12-40 12-21 0-31.5-14.5t-10.5-35.5q0-6 2-20l86-500-364-354q-25-27-25-48 0-37 56-46l502-73 225-455q19-41 49-41t49 41l225 455 502 73q56 9 56 46z" style="fill: rgb(213, 78, 33);"></path></svg></span>', 'manage_options', 'https://wp-r.ru/plaginy/adsplacer-pro.html?utm_source=plugin&utm_medium=adsplacer&utm_campaign=menu');
 	}
 
 	public function admin_enqueue_scripts($page) {
@@ -274,8 +274,17 @@ class AdsPlacer {
 
 		?>
 		<div class="wrap">
+
 			<h2>AdsPlace'r <?php _e('Settings', 'adsplacer'); ?></h2>
-			<?php if(get_locale() == 'ru_RU'):?><span class="adsplacer_settings_promo_link">Больше настроек в <a href="https://wp-r.ru/?p=365&ref_prid=974a825f5a554335d4f146201efa1a96" target="_blank">AdsPlace'r Pro</a>. Ваш промокод с 10% скидкой <strong style="color: #f00;">free1Ads</strong></span><?php endif;?>
+
+            <?php if ( in_array( get_locale(), [ 'ru_RU', 'uk', 'kk', 'bel' ] ) ): ?>
+                <div class="adsplacer-promo">
+                    <div>
+                        ⭐️ Получи больше возможностей в <a href="https://wp-r.ru/plaginy/adsplacer-pro.html?utm_source=plugin&utm_medium=adsplacer&utm_campaign=top" target="_blank" rel="noopener noreferrer">AdsPlace'r Pro</a>. Активируйте промокод сейчас и получите скидку 15%: <strong style="color: #f00;">adsplacer_pro</strong><br/>
+                    </div>
+                </div>
+            <?php endif; ?>
+
 			<form id="adsplacer_settings_form" method="POST" action="">
 				<div id="adsplacer_settings_tabs">
 					<ul>
@@ -305,7 +314,32 @@ class AdsPlacer {
 							</div>
 						<?php } ?>
 
+
 						<div style="clear:both"></div>
+
+                        <?php if ( in_array( get_locale(), [ 'ru_RU', 'uk', 'kk', 'bel' ] ) ): ?>
+                            <div class="adsplacer-promo">
+                                <div class="adsplacer-promo__item">
+                                    <a href="https://wpshop.ru/?utm_source=plugin&utm_medium=adsplacer&utm_campaign=bottom" target="_blank" rel="noopener noreferrer">WPShop.ru</a>
+                                    <div>премиум шаблоны и плагины</div>
+                                </div>
+                                <div class="adsplacer-promo__item">
+                                    <a href="https://wpcourses.ru/?utm_source=plugin&utm_medium=adsplacer&utm_campaign=bottom" target="_blank" rel="noopener noreferrer">WPCourses.ru</a>
+                                    <div>практические курсы WordPress</div>
+                                </div>
+                                <div class="adsplacer-promo__item">
+                                    <a href="https://wpdetect.ru/?utm_source=plugin&utm_medium=adsplacer&utm_campaign=bottom" target="_blank" rel="noopener noreferrer">WPDetect.ru</a>
+                                    <div>определитель шаблона и плагинов</div>
+                                </div>
+                                <div class="adsplacer-promo__item">
+                                    <a href="https://wpaudit.ru/?utm_source=plugin&utm_medium=adsplacer&utm_campaign=bottom" target="_blank" rel="noopener noreferrer">WPAudit.ru</a>
+                                    <div>бесплатный аудит сайта</div>
+                                </div>
+                            </div>
+                        <?php endif; ?>
+
+						<div style="clear:both"></div>
+
 
 						<div class="custom-ads-tabs">
 							<ul>
@@ -575,8 +609,13 @@ class AdsPlacer {
 				<p>Ниже есть возможность использовать шорткоды для вставки рекламных блоков в произвольное место статьи. Вы можете сделать сразу 5 шорткодов для PC и 5 для Мобильных ОС.
 				<div class="autor_plugin">
 					<h3>Разработчики</h3>
+                    <div>
+                        <img src="http://1.gravatar.com/avatar/75ca97921a2a840bdc60a9b66c363d9b?s=50&d=mm&r=g" alt="" />
+                        <a href="https://wpshop.ru/?utm_source=plugin&utm_medium=adsplacer&utm_campaign=developer" target="_blank">WPShop.ru</a><br/>Разработка<br/>PHP & WP Developer
+                    </div>
 					<div>
-						<img src="https://www.gravatar.com/avatar/5480336fef49a6c9a0c15beea7771941?d=mm&s=50&r=G" alt="Vitalik" /><a href="http://mojwp.ru" target="_blank">Виталик mojWP</a><br/>Автор<br/><a href="https://wp-r.ru" target="_blank">Магазин WordPress</a>
+						<img src="https://www.gravatar.com/avatar/5480336fef49a6c9a0c15beea7771941?d=mm&s=50&r=G" alt="" />
+                        <a href="http://mojwp.ru/" target="_blank">Виталик mojWP</a><br/>Автор<br/><a href="https://wp-r.ru/?utm_source=plugin&utm_medium=adsplacer&utm_campaign=developer" target="_blank">Магазин WordPress</a>
 					</div>
 				</div>
 			<?php } else { ?>

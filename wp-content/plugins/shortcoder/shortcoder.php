@@ -1,228 +1,409 @@
 <?php
 /*
 Plugin Name: Shortcoder
-Plugin URI: https://www.aakashweb.com/
-Description: Shortcoder is a plugin which allows to create a custom shortcode and store HTML, JavaScript and other snippets in it. So if that shortcode is used in any post or pages, then the code stored in the shortcode get executed in that place. You can create a shortcode for Youtube videos, adsense ads, buttons and more.
+Plugin URI: https://www.aakashweb.com/wordpress-plugins/shortcoder/
+Description: Shortcoder plugin allows to create a custom shortcodes for HTML, JavaScript and other snippets. Now the shortcodes can be used in posts/pages and the snippet will be replaced in place.
 Author: Aakash Chakravarthy
-Version: 4.1.3
+Version: 5.6
 Author URI: https://www.aakashweb.com/
+Text Domain: shortcoder
+Domain Path: /languages
 */
 
-define( 'SC_VERSION', '4.1.3' );
+define( 'SC_VERSION', '5.6' );
 define( 'SC_PATH', plugin_dir_path( __FILE__ ) ); // All have trailing slash
 define( 'SC_URL', plugin_dir_url( __FILE__ ) );
 define( 'SC_ADMIN_URL', trailingslashit( plugin_dir_url( __FILE__ ) . 'admin' ) );
 define( 'SC_BASE_NAME', plugin_basename( __FILE__ ) );
+define( 'SC_POST_TYPE', 'shortcoder' );
 
-class Shortcoder{
-    
+// error_reporting(E_ALL);
+
+final class Shortcoder{
+
+    static public $shortcodes = array();
+
     public static function init(){
-        
-        add_action( 'plugins_loaded', array( __class__, 'load_text_domain' ) );
-        
-        register_activation_hook( __FILE__, array( __class__, 'on_activate' ) );
-        
-        add_filter( 'the_content', array( __class__, 'wp_44_workaround' ), 5 );
-        
-        // Register the shortcode
-        add_shortcode( 'sc', array( __class__, 'execute_shortcode' ) );
         
         // Include the required
         self::includes();
+
+        add_action( 'plugins_loaded', array( __CLASS__, 'load_text_domain' ) );
+        
+        add_shortcode( 'sc', array( __CLASS__, 'execute_shortcode' ) );
         
     }
-    
-    public static function list_all(){
-        
-        $shortcodes = get_option( 'shortcoder_data' );
-        
-        return empty( $shortcodes ) ? array() : $shortcodes;
-        
-    }
-    
+
     public static function includes(){
-        
+
+        include_once( SC_PATH . 'includes/updates.php' );
         include_once( SC_PATH . 'includes/metadata.php' );
-        include_once( SC_PATH . 'includes/import.php' );
-        include_once( SC_PATH . 'admin/sc-admin.php' );
-        
+        include_once( SC_PATH . 'admin/admin.php' );
+        include_once( SC_PATH . 'admin/form.php' );
+        include_once( SC_PATH . 'admin/edit.php' );
+        include_once( SC_PATH . 'admin/settings.php' );
+        include_once( SC_PATH . 'admin/manage.php' );
+        include_once( SC_PATH . 'admin/tools.php' );
+
     }
-    
-    public static function execute_shortcode( $atts, $content ) { 
-        
-        $shortcodes = self::list_all();
-        
+
+    public static function execute_shortcode( $atts, $enclosed_content = null ){
+
+        $atts = (array) $atts;
+        $shortcodes = self::get_shortcodes();
+
         if( empty( $shortcodes ) ){
-            return '';
+            return '<!-- No shortcodes are defined -->';
         }
-        
-        // Get the Shortcode name
-        if(isset($atts[0])){
-            $sc_name = str_replace(array('"', "'", ":"), '', $atts[0]);
-            unset($atts[0]);
-        }else{
-            // Old version with "name" param support
-            if(array_key_exists("name", $atts)){
-                $tVal = $atts['name'];
-                if(array_key_exists($tVal, $shortcodes)){
-                    $sc_name = $tVal;
-                    unset($atts['name']);
-                }
-            }
+
+        $shortcode = self::find_shortcode( $atts, $shortcodes );
+
+        if( !is_array( $shortcode ) ){
+            return $shortcode;
         }
-        
-        if(!isset($sc_name)){
-            return '';
+
+        $sc_content = $shortcode[ 'content' ];
+        $sc_settings = $shortcode[ 'settings' ];
+
+        if( !self::can_display( $shortcode ) ){
+            return '<!-- Shortcode does not match the conditions -->';
         }
-        
-        // Check whether shortcoder can execute
-        if( self::check_conditions( $sc_name ) ){
-        
-            $sc_content_final = '';
-        
-            // If SC has parameters, then replace it
-            if( !empty( $atts ) ){
-                
-                $keys = array();
-                $values = array();
-                $i = 0;
-        
-                // Seperate key and value from atts
-                foreach( $atts as $k => $v ){
-                    if( $k !== 0 ){
-                        $keys[$i] = "%%" . $k . "%%";
-                        $values[$i] = $v;
-                    }
-                    $i++;
-                }
-                
-                // Replace the params
-                $sc_content = $shortcodes[ $sc_name ][ 'content' ]; 
-                $sc_content_rep1 = str_ireplace( $keys, $values, $sc_content );
-                $sc_content_final = preg_replace( '/%%[^%\s]+%%/', '', $sc_content_rep1 );
-                
-            }
-            else{
-            
-                // If the SC has no params, then replace the %%vars%%
-                $sc_content = $shortcodes[ $sc_name ][ 'content' ]; 
-                $sc_content_final = preg_replace( '/%%[^%\s]+%%/', '', $sc_content );
-                
-            }
-            
-            $sc_content_final = self::replace_wp_params( $sc_content_final );
-            return '<!-- Start shortcoder -->' . do_shortcode( $sc_content_final ) . '<!-- End shortcoder v' . SC_VERSION . '-->';
-            
-        }else{
-            return '<!-- Shortcoder conditions not met -->';
-        }
+
+        $sc_content = self::replace_sc_params( $sc_content, $atts );
+        $sc_content = self::replace_wp_params( $sc_content, $enclosed_content );
+        $sc_content = self::replace_custom_fields( $sc_content );
+        $sc_content = do_shortcode( $sc_content );
+
+        return $sc_content;
+
     }
-    
-    public static function check_conditions( $name ){
-        
-        $shortcodes = self::list_all();
-        
-        if( array_key_exists( $name, $shortcodes ) ){
-            
-            $sc = wp_parse_args( $shortcodes[ $name ], self::defaults() );
-            
-            $devices = $sc[ 'devices' ];
-            if( $devices == 'mobile_only' && !wp_is_mobile() ){
-                return false;
-            }
-            
-            if( $devices == 'desktop_only' && wp_is_mobile() ){
-                return false;
-            }
-            
-            if( $sc[ 'disabled' ] == 0 ){
-                if( current_user_can( 'level_10' ) && $sc[ 'hide_admin' ] == 1 ){
-                    return false;
-                }else{
-                    return true;
+
+    public static function get_shortcodes(){
+
+        if( !empty( self::$shortcodes ) ){
+            return self::$shortcodes;
+        }
+
+        $shortcodes = array();
+        $shortcode_posts = get_posts(array(
+            'post_type' => SC_POST_TYPE,
+            'posts_per_page' => -1,
+            'post_status' => 'publish'
+        ));
+
+        foreach( $shortcode_posts as $index => $post ){
+            $shortcodes[ $post->post_name ] = array(
+                'id' => $post->ID,
+                'content' => $post->post_content,
+                'settings' => self::get_sc_settings( $post->ID )
+            );
+        }
+
+        self::$shortcodes = $shortcodes;
+
+        return $shortcodes;
+
+    }
+
+    public static function default_sc_settings(){
+
+        return array(
+            '_sc_disable_sc' => 'no',
+            '_sc_disable_admin' => 'no',
+            '_sc_editor' => '',
+            '_sc_allowed_devices' => 'all'
+        );
+
+    }
+
+    public static function default_settings(){
+
+        return array(
+            'default_editor' => 'code',
+            'default_content' => ''
+        );
+
+    }
+
+    public static function get_settings(){
+
+        $settings = get_option( 'sc_settings', array() );
+        $default_settings = self::default_settings();
+
+        return self::set_defaults( $settings, $default_settings );
+
+    }
+
+    public static function get_sc_settings( $post_id ){
+
+        $meta_vals = get_post_meta( $post_id, '', true );
+        $default_vals = self::default_sc_settings();
+        $settings = array();
+
+        if( !is_array( $meta_vals ) ){
+            return $default_vals;
+        }
+
+        foreach( $default_vals as $key => $val ){
+            $settings[ $key ] = array_key_exists( $key, $meta_vals ) ? $meta_vals[$key][0] : $val;
+        }
+
+        $settings[ '_sc_title' ] = get_the_title( $post_id );
+
+        return $settings;
+
+    }
+
+    public static function get_sc_tag( $post_id ){
+        $post = get_post( $post_id );
+        return '[sc name="' . $post->post_name . '"][/sc]';
+    }
+
+    public static function find_shortcode( $atts, $shortcodes ){
+
+        $sc_name = false;
+
+        // Find by shortcode ID
+        if( array_key_exists( 'sc_id', $atts ) ){
+            $sc_id = $atts[ 'sc_id' ];
+            foreach( $shortcodes as $temp_name => $temp_props ){
+                if( $temp_props[ 'id' ] == $sc_id ){
+                    $sc_name = $temp_name;
+                    break;
                 }
-            }else{
-                return false;
             }
-        }else{
+        }
+
+        // If shortcode ID is not passed, then get the shortcode name
+        if( !$sc_name ){
+            if( !array_key_exists( 'name', $atts ) ){
+                return '<!-- Shortcode is missing "name" attribute -->';
+            }
+            $sc_name = $atts[ 'name' ];
+        }
+
+        // Check if the shortcode name exists
+        if( !array_key_exists( $sc_name, $shortcodes ) ){
+            $sc_name = sanitize_title_with_dashes( $sc_name );
+            if( !array_key_exists( $sc_name, $shortcodes ) ){
+                return '<!-- Shortcode does not exist -->';
+            }
+        }
+
+        return $shortcodes[ $sc_name ];
+
+    }
+
+    public static function can_display( $sc_props ){
+
+        $settings = $sc_props['settings'];
+
+        if( $settings[ '_sc_disable_sc' ] == 'yes' ){
             return false;
         }
-        
+
+        $devices = $settings[ '_sc_allowed_devices' ];
+
+        if( $devices == 'mobile_only' && !wp_is_mobile() ){
+            return false;
+        }
+
+        if( $devices == 'desktop_only' && wp_is_mobile() ){
+            return false;
+        }
+
+        if( current_user_can( 'manage_options' ) && $settings[ '_sc_disable_admin' ] == 'yes' ){
+            return false;
+        }
+
+        return true;
+
     }
-    
-    public static function replace_wp_params( $content ){
-        
+
+    public static function replace_sc_params( $content, $params ){
+
+        $params = array_change_key_case( $params, CASE_LOWER );
+
+        preg_match_all('/%%([a-zA-Z0-9_\-]+)\:?(.*?)%%/', $content, $matches);
+
+        $cp_tags = $matches[0];
+        $cp_names = $matches[1];
+        $cp_defaults = $matches[2];
+        $to_replace = array();
+
+        for( $i = 0; $i < count( $cp_names ); $i++ ){
+
+            $name = strtolower( $cp_names[ $i ] );
+            $default = $cp_defaults[ $i ];
+            $value = '';
+
+            if( array_key_exists( $name, $params ) ){
+                $value = $params[ $name ];
+
+                // Handle scenario when the attributes are added with paragraph tags by autop
+                if( substr( $value, 0, 4 ) == '</p>' ){
+                    $value = substr( $value, 4 );
+                    if( substr( $value, -3 ) == '<p>' ){
+                        $value = substr( $value, 0, -3 );
+                    }
+                }
+
+            }
+
+            if( $value == '' ){
+                array_push( $to_replace, $default );
+            }else{
+                array_push( $to_replace, $value );
+            }
+
+        }
+
+        $content = str_ireplace( $cp_tags, $to_replace, $content );
+
+        return $content;
+
+    }
+
+    public static function replace_wp_params( $content, $enc_content = null ){
+
         $params = self::wp_params_list();
         $metadata = Shortcoder_Metadata::metadata();
+        $metadata[ 'enclosed_content' ] = $enc_content;
+        $all_params = array();
         $to_replace = array();
-        
-        foreach( $params as $id => $name ){
+
+        foreach( $params as $group => $group_info ){
+            $all_params = array_merge( $group_info[ 'params' ], $all_params );
+        }
+
+        foreach( $all_params as $id => $name ){
             if( array_key_exists( $id, $metadata ) ){
                 $placeholder = '$$' . $id . '$$';
                 $to_replace[ $placeholder ] = $metadata[ $id ];
             }
         }
-        
+
         $content = strtr( $content, $to_replace );
-        
+
         return $content;
-        
-    }
-    
-    public static function wp_params_list(){
-        return apply_filters( 'sc_mod_wp_params', array(
-            'url' => 'URL of the post/location',
-            'title' => 'Title of the post/location',
-            'short_url' => 'Short URL of the post/location',
-            
-            'post_id' => 'Post ID',
-            'post_image' => 'Post featured image URL',
-            'post_excerpt' => 'Post excerpt',
-            'post_author' => 'Post author',
-            'post_date' => 'Post date',
-            'post_comments_count' => 'Post comments count'
-        ));
-    }
-    
-    public static function on_activate(){
-        
-        $shortcodes = self::list_all();
-        $sc_flags = get_option( 'shortcoder_flags' );
-        
-        // Move the flag version fix to sc_flags option
-        if( isset( $shortcodes[ '_version_fix' ] ) ){
-            unset( $shortcodes['_version_fix'] );
-            update_option( 'shortcoder_data', $shortcodes );
-        }
-        
-        $sc_flags[ 'version' ] = SC_VERSION;
-        update_option( 'shortcoder_flags', $sc_flags );
 
     }
-    
-    public static function defaults(){
-        return array(
-            'content' => '',
-            'disabled' => 0,
-            'hide_admin' => 0,
-            'devices' => 'all'
-        );
+
+    public static function replace_custom_fields( $content ){
+
+        global $post;
+
+        preg_match_all('/\$\$[^\s^$]+\$\$/', $content, $matches );
+
+        $cf_tags = $matches[0];
+
+        if( empty( $cf_tags ) ){
+            return $content;
+        }
+
+        foreach( $cf_tags as $tag ){
+            
+            if( strpos( $tag, 'custom_field:' ) === false ){
+                continue;
+            }
+            
+            preg_match( '/:[^\s\$]+/', $tag, $match );
+
+            if( empty( $match ) ){
+                continue;
+            }
+
+            $match = substr( $match[0], 1 );
+            $value = is_object( $post ) ? get_post_meta( $post->ID, $match, true ) : '';
+            $content = str_replace( $tag, $value, $content );
+
+        }
+        
+        return $content;
+
     }
-    
-    public static function can_edit_sc(){
-        return current_user_can( 'manage_options' );
+
+    public static function wp_params_list(){
+
+        return apply_filters( 'sc_mod_wp_params', array(
+            'wp_info' => array(
+                'name' => __( 'WordPress information', 'shortcoder' ),
+                'icon' => 'wordpress-alt',
+                'params' => array(
+                    'url' => __( 'URL of the post/location', 'shortcoder' ),
+                    'title' => __( 'Title of the post/location', 'shortcoder' ),
+                    'short_url' => __( 'Short URL of the post/location', 'shortcoder' ),
+                    
+                    'post_id' => __( 'Post ID', 'shortcoder' ),
+                    'post_image' => __( 'Post featured image URL', 'shortcoder' ),
+                    'post_excerpt' => __( 'Post excerpt', 'shortcoder' ),
+                    'post_author' => __( 'Post author', 'shortcoder' ),
+                    'post_date' => __( 'Post date', 'shortcoder' ),
+                    'post_modified_date' => __( 'Post modified date', 'shortcoder' ),
+                    'post_comments_count' => __( 'Post comments count', 'shortcoder' ),
+                    'post_slug' => __( 'Post slug', 'shortcoder' ),
+                    
+                    'site_name' => __( 'Site title', 'shortcoder' ),
+                    'site_description' => __( 'Site description', 'shortcoder' ),
+                    'site_url' => __( 'Site URL', 'shortcoder' ),
+                    'site_wpurl' => __( 'WordPress URL', 'shortcoder' ),
+                    'site_charset' => __( 'Site character set', 'shortcoder' ),
+                    'wp_version' => __( 'WordPress version', 'shortcoder' ),
+                    'stylesheet_url' => __( 'Active theme\'s stylesheet URL', 'shortcoder' ),
+                    'stylesheet_directory' => __( 'Active theme\'s directory', 'shortcoder' ),
+                    'atom_url' => __( 'Atom feed URL', 'shortcoder' ),
+                    'rss_url' => __( 'RSS 2.0 feed URL', 'shortcoder' )
+                )
+            ),
+            'date_info' => array(
+                'name' => __( 'Date parameters', 'shortcoder' ),
+                'icon' => 'calendar-alt',
+                'params' => array(
+                    'day' => __( 'Day', 'shortcoder' ),
+                    'day_lz' => __( 'Day - leading zeros', 'shortcoder' ),
+                    'day_ws' => __( 'Day - words - short form', 'shortcoder' ),
+                    'day_wf' => __( 'Day - words - full form', 'shortcoder' ),
+                    'month' => __( 'Month', 'shortcoder' ),
+                    'month_lz' => __( 'Month - leading zeros', 'shortcoder' ),
+                    'month_ws' => __( 'Month - words - short form', 'shortcoder' ),
+                    'month_wf' => __( 'Month - words - full form', 'shortcoder' ),
+                    'year' => __( 'Year', 'shortcoder' ),
+                    'year_2d' => __( 'Year - 2 digit', 'shortcoder' ),
+                )
+            ),
+            'sc_cnt' => array(
+                'name' => __( 'Shortcode enclosed content', 'shortcoder' ),
+                'icon' => 'text',
+                'params' => array(
+                    'enclosed_content' => __( 'Shortcode enclosed content', 'shortcoder' )
+                )
+            )
+        ));
+
     }
-    
-    public static function wp_44_workaround( $content ){
-        return str_replace( '[sc:', '[sc name=', $content );
+
+    public static function set_defaults( $a, $b ){
+        
+        $a = (array) $a;
+        $b = (array) $b;
+        $result = $b;
+        
+        foreach ( $a as $k => &$v ) {
+            if ( is_array( $v ) && isset( $result[ $k ] ) ) {
+                $result[ $k ] = self::set_defaults( $v, $result[ $k ] );
+            } else {
+                $result[ $k ] = $v;
+            }
+        }
+        return $result;
     }
-    
+
     public static function load_text_domain(){
-        
+
         load_plugin_textdomain( 'shortcoder', FALSE, basename( dirname( __FILE__ ) ) . '/languages/' );
-        
+
     }
-    
+
 }
 
 Shortcoder::init();

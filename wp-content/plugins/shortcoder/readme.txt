@@ -1,97 +1,249 @@
-=== Shortcoder ===
+# Shortcoder — Create Shortcodes for Anything
 Contributors: vaakash
 Author URI: https://www.aakashweb.com/
 Plugin URI: https://www.aakashweb.com/wordpress-plugins/shortcoder/
-Tags: shortcode, html, javascript, shortcodes, short code, posts, pages, widgets, insert, adsense, ads, snippets,
-Donate link: https://goo.gl/qMF3iE
+Tags: shortcode, html, javascript, shortcodes, snippets, posts, pages, widgets, insert, adsense, ads, code
+Donate link: https://www.paypal.me/vaakash/
 License: GPLv2 or later
-Requires at least: 3.3
-Tested up to: 4.9
-Stable tag: 4.1.3
+Requires PHP: 5.3
+Requires at least: 4.9.0
+Tested up to: 5.8
+Stable tag: 5.6
 
 Create custom "Shortcodes" easily for HTML, JavaScript snippets and use the shortcodes within posts, pages & widgets.
 
-== Description ==
 
-Shortcoder is a plugin which allows to create a custom shortcode and store HTML, Javascript and other snippets in it. So if that shortcode is used in any post or pages, then the code stored in the shortcode get exceuted in that place.
 
-= Create custom shortcodes easily =
+## Description
+
+Shortcoder plugin allows to create a custom shortcodes for HTML, JavaScript and other snippets. Now the shortcodes can be used in posts/pages and the snippet will be replaced in place.
+
+### ✍ Create shortcodes easily
 1. Give a name for the shortcode
-1. Paste the HTML/Javascript as content
+1. Paste the HTML/JavaScript/CSS as shortcode content
 1. Save !
-1. Now insert the shortcode `[sc name="my_shortcode"]` in your post.
-1. **Voila !** You got the HTML/Javascript in your post.
+1. Now insert the shortcode `[sc name="my_shortcode"]` in your post/page.
+1. **Voila !** You got the HTML/Javascript/CSS in your post.
 
-= Features =
+### ✨ Features
 
-* Create **"custom shortcodes"** easily and use them within WordPress
-* Use any kind of **HTML** as Shortcode content.
-* Insert: Custom parameters in shortcode
-* Insert: WordPress parameters in shortcode
-* Visual editor for adding shortcode contents.
+* Create **custom shortcodes** easily and use them in any place where shortcode is supported.
+* Have any **HTML**, **Javascript**, **CSS** as Shortcode content.
+* Insert: **Custom parameters** in shortcode
+* Insert: **WordPress parameters** in shortcode
+* Multiple editors: Code, Visual and text modes.
 * Globally disable the shortcode when not needed.
-* Can disable the shortcode to admins.
+* Disable shortcode on desktop, mobile devices.
+* A button in post editor to pick the shortcodes to insert.
+* Supports Gutenberg.
 
-[youtube="https://www.youtube.com/watch?v=GrlRADfvjII"]
-
-= An example usage =
+### 🎲 An example usage
 
 1. Create a shortcode named "adsenseAd" in the Shortcoder admin page.
 1. Paste the adsense code in the box given and save it.
 1. Use `[sc name="adsenseAd"]` in your posts and pages.
-1. Tada !!! the ad appears in the post.
+1. Tada !!! the ad code is replaced and it appears in the post.
+1. Now you can edit the ad code at one place and the code is updated in all the locations where the shortcode is used.
 
-* Using this idea, shortcodes can be created for frequently used snippets.
-* You can also add parameters (like `%%id%%`) inside the snippets, and vary it like `[sc name="youtube" id="GrlRADfvjII"]`
-* This plugin will be hugely useful to all !!!
+Similarly shortcodes can be created for frequently used snippets.
 
-= Resources =
+You can also add [custom parameters](https://www.aakashweb.com/docs/shortcoder/) (like `%%id%%`) inside the snippets, and change it's value like `[sc name="youtube" id="GrlRADfvjII"]` when using them.
 
-* [Documentation](https://www.aakashweb.com/wordpress-plugins/shortcoder/)
-* [FAQs](https://www.aakashweb.com/faqs/wordpress-plugins/shortcoder/)
-* [Support](https://www.aakashweb.com/forum/)
-* [Report Bugs](https://www.aakashweb.com/forum/)
+### Using in block editor
 
-== Installation ==
+Though shortcodes can be used in **any** place manually, Shortcoder provides below options to select and insert the shortcodes created easily when working with the block editor.
+
+* Shortcoder block
+* Toolbar button to select and insert shortcodes inline (under "more")
+
+### Links
+
+* [Documentation](https://www.aakashweb.com/docs/shortcoder/)
+* [FAQs](https://www.aakashweb.com/docs/shortcoder/faq/)
+* [Support forum/Report bugs](https://www.aakashweb.com/forum/)
+
+
+
+## Installation
 
 1. Extract the zipped file and upload the folder `Shortcoder` to to `/wp-content/plugins/` directory.
 1. Activate the plugin through the `Plugins` menu in WordPress.
-1. Go to the "Shortcoder" admin page. Admin page is under the "Settings" menu.
-1. Enter a shortcode name.
-1. Paste some code in it.
-1. Then use the shortcode `[sc name="name of the shortcode"]` in your post. ex: If "youtube" is the shortcode name, then just use `[sc name="youtube"]` in your posts
-1. That's all ! 
+1. Open the admin page from the "Shortcoder" link in the navigation menu.
 
-You can also insert some parameters within the post. Check this page to [learn more](https://www.aakashweb.com/wordpress-plugins/shortcoder/).
 
-== Frequently Asked Questions ==
 
-Please visit the [Plugin homepage](https://www.aakashweb.com/wordpress-plugins/shortcoder/) for lots of FAQ's. Selected are given here.
+## Frequently Asked Questions
 
-= I've created a shortcode, how to use it ? =
+Please visit the [plugin documentation page](https://www.aakashweb.com/docs/shortcoder/) for complete list of FAQs.
 
-For example, consider you made a shortcode "advertisement". Then you should use the shortcode `[sc name="advertisement"]` in your post.
+### What are the allowed characters for shortcode name ?
 
-= How to temporarily disable a shortcode ? =
+Allowed characters are alphabets, numbers, hyphens and underscores.
 
-Just check the "Temporarily disable this shortcode" in the shortcode admin page to disable it. 
-Note: When you disable a shortcode, the shortcode will not be executed in the page.
+### My shortcode is not working in my page builder !
 
-[More FAQs](https://www.aakashweb.com/docs/shortcoder-doc/)
+Please check with your page builder plugin to confirm if the block/place/area where the shortcode is being used can execute shortcodes. If yes, then shortcode should work fine just like regular WordPress shortcodes.
 
-== Screenshots ==
+### My shortcode is not working !
+
+Please check the following if you notice that the shortcode content is not printed or when the output is not as expected.
+
+* Please verify if the shortcode content is printed. If shortcode content is not seen printed, check the shortcode settings to see if any option is enabled to restrict where and when shortcode is printed. Also confirm if the shortcode name is correct and there is no duplicate `name` attribute for the shortcode.
+* If shortcode is printed but the output is not as expected, please try the shortcode content in an isolated environment and confirm if the shortcode content is working correctly as expected. Sometimes it might be external factors like theme, other plugin might conflict with the shortcode content being used.
+* There is a known limitation in shortcodes API when there is a combination of unclosed and closed shortcodes. Please refer [this document](https://codex.wordpress.org/Shortcode_API#Unclosed_Shortcodes) for more information.
+
+### Can I insert PHP code in shortcode content ?
+
+No, right now the plugin supports only HTML, Javascript and CSS as shortcode content.
+
+
+
+## Screenshots
 
 1. Shortcoder admin page.
 2. Editing a shortcode.
-3. Popup to select and insert shortcode into posts.
-4. A shortcode inserted into a post.
-5. The shortcode executed in the post.
+3. "Insert shortcode" popup to select and insert shortcodes.
+4. A shortcode inserted into post.
+5. Shortcoder block for Gutenberg editor.
+6. Shortcoder executed in the post.
+7. Insert shortcode inline from block editor toolbar.
 
 [More Screenshots](https://www.aakashweb.com/wordpress-plugins/shortcoder/)
 
-== Changelog ==
 
-= 4.1.3 =
+
+## Changelog
+
+### 5.6
+* New: Shortcodes available to copy/insert are now closed by default.
+* Fix: Custom parameter value 0 is not displayed.
+* Fix: Support for WordPress 5.8
+
+### 5.5
+* New: General settings page to configure default editor and shortcode content.
+* New: Block to insert shortcode rewritten from scratch.
+* New: Toolbar button to insert shortcodes inline.
+* New: Shortcodes are now closed by default when inserted from editor.
+* Fix: Custom fields parsing issue when they are placed next to each other.
+* Fix: Enclosed content in block input now retains multi-line.
+* Fix: Minor refinements to UI.
+
+### 5.4
+* New: Code editor is now loaded locally and not from cloudflare.
+* New: Code editor now shows hints and highlights any syntax error.
+* New: Hyphens can now be used in shortcode custom parameters.
+* Fix: Handle scenario where shortcode attribute is received as a string sometimes.
+* Fix: Notice where `wp_localize_script` was called incorrectly.
+* Fix: Handle scenario where HTML is passed as shortcode parameter.
+* New: WordPress requirement changed from 4.4 to 4.9
+
+### 5.3.4
+* New: Tested with WordPress 5.6
+* Fix: Handle warning with `trim` while fetching page metadata at some pages.
+
+### 5.3.3
+* New: Support for `post slug` as the new shortcode parameter under WordPress information.
+* New: Codemirror has been updated to latest version.
+* Fix: Handle code editor loading issue when there is any collision.
+* Fix: Handle input fields which have empty `id` attribute.
+* Fix: Handle issue of `$post` object being undefined at some cases.
+* Fix: Renamed usages of `__class__` to `__CLASS__`
+
+### 5.3.2
+* New: In code editor, shortcodes will be highlighted and code editor font size is slightly bigger.
+
+### 5.3.1
+* New: Code editor is now made the default editor.
+* Fix: Minor changes to admin UI.
+
+### 5.3
+* New: Added support for underscores in custom parameters.
+* New: Getting ready for internationalization of the plugin.
+* Fix: Insert shortcode popup shows duplicate available parameters in case of same parameter with different case.
+
+### 5.2.1
+* Fix: Custom parameters being not replaced in some scenarios.
+* Fix: Minor enhancement to insert custom parameter form.
+
+### 5.2
+* New: Default values can now be provided to custom parameters.
+* Fix: Script tags, custom field placeholder and backslash being stripped after saving the shortcode sometimes.
+* Fix: Rel attribute being modified for links.
+* New: Added "Manage shortcodes" link to plugin list page for easy access after activation.
+
+### 5.1
+* New: Import/Export link added to the shortcoder list page.
+* Fix: `empty()` was throwing error at some places for users using PHP 5.5 below as function return value was passed to it.
+* Fix: Shortcoder QTTags button was loading in frontends.
+* Fix: "Insert shortcode" popup was hidden behind in theme customizer page.
+* Fix: `array_key_exists` array but bool given warning.
+* Fix: Hide comments metabox in shortcode edit page as it was shown in certain conditions.
+
+### 5.0.4
+* Fix: `script` and `style` tags stripped after 4.x upgrade. New migration will run in this version and shortcode content will now be fixed.
+
+### 5.0.3
+* Fix: Shortcode content is not escaped when code editor is used. This is requirement because `post_content` behaves strangely when user has rich editing enabled.
+
+### 5.0.2
+* Fix: Shortcodes inside shortcode content not getting executed.
+* Fix: Disable Gutenberg block for older not supported WordPress versions.
+
+### 5.0.1
+* Fix: Code editor escaping HTML characters.
+* Fix: `get_current_screen()` undefined.
+* Fix: Code editor breaks if there is any other plugin which loads codemirror.
+* Fix: `tools.php` is not found.
+
+### 5.0
+* New: Brand new version. Plugin rewritten from scratch.
+* New: Shortcoder block for the block editor.
+
+### 4.4
+* New: Insert shortcode automatically adds "closing tag" if the shortcode has enclosed content parameter.
+* Fix: Codemirror has been updated to latest version.
+
+### 4.3
+* New: Edit shortcode name after creating.
+* New: Post modified date parameter added.
+* Fix: Date parameters now display in site language.
+
+### 4.2
+* Fix: Some plugins fail to fire onload JS event since it was overwritten by shortcoder.
+* Fix: Javascript in insert shortcode popup not working in IE 11.
+* Fix: Missing parenthesis while calling `is_year`.
+* Fix: Widgets page not loading insert shortcode popup.
+* Fix: Removed settings emoji icon from plugin actions list.
+* Fix: Load latest version 5.42.0 of codemirror.
+* Fix: Updated minimum required WordPress version.
+
+### 4.1.9
+* Fix: Minor UI refinements for better experience.
+* Fix: Import error where some exported JSON files have 0 as EOF.
+
+### 4.1.8
+* New: Insert custom fields in shortcode content.
+* Fix: Removed comments in shortcode output
+
+### 4.1.7
+* New: Categorize, search and filter shortcodes using "tags".
+* New: Last used shortcode editor will be saved along with shortcode.
+* New: Enclosed shortcode content can now be used as shortcode parameter.
+* New: Active line highlight has been enabled for code editor.
+* Fix: Codemirror has been updated to latest version.
+* Fix: Minor admin interface enhancements.
+
+### 4.1.6
+* New: Date variables can noe be added into shortcode content.
+* Fix: Error "trying to get property of non-object" is handled.
+
+### 4.1.5
+* New: Bloginfo variables can now be added into shortcode content.
+
+### 4.1.4
+* New: Codemirror powered syntax highlighted shortcode content code editor (beta).
+
+### 4.1.3
 * Fix: Shortcode names with not-allowed characters cannot be edited/deleted.
 * New: Shortcode imports made can now be fresh or overwritten.
 * New: Only users with `manage_options` capability will see "edit shortcode" option in insert window.
@@ -99,84 +251,37 @@ Note: When you disable a shortcode, the shortcode will not be executed in the pa
 * Fix: Case sensitive search in admin pages.
 * Fix: Minor admin interface changes.
 
-= 4.1.2 =
+### 4.1.2
 * New: Search box for shortcodes in admin page.
 
-= 4.1.1 =
+### 4.1.1
 * Fix: HTTP 500 error because of syntax error in import module.
 
-= 4.1 =
+### 4.1
 * New: Import/export feature for shortcodes.
 * Fix: Visual editor is now disabled by default.
 * Fix: Added instructions in admin page.
 
-= 4.0.3 =
+### 4.0.3
 * New: Added feature to sort created shortcodes list.
 * Fix: HTML errors in admin page
 
-= 4.0.2 =
+### 4.0.2
 * Fix: Sometimes `get_current_screen()` was called early in some setups. 
 
-= 4.0.1 =
+### 4.0.1
 * Fix: Servers with PHP version < 5.5 were facing HTTP 500 error because of misuse of PHP language construct in code.
 
-= 4.0 =
+### 4.0
 * New: Plugin rewritten from scratch.
 * New: Brand new administration page
-* New: Shortcode vissibility settings, show/hide in desktop/mobile devices
+* New: Shortcode visibility settings, show/hide in desktop/mobile devices
 * New: Insert WordPress information into shortcode content.
 * Fix: Insert shortcode window is not loading.
 * Fix: Unable to delete the shortcodes
 
-= 3.4.1 =
-* Fixed Shortcoder not working in WordPress 4.4
-* Changed the shortcoder syntax from `[sc:the_name]` to `[sc name="the_name"]` permanently in effect of WordPress 4.4 changes.
+(Older change logs are removed from this list)
 
-= 3.4 =
-* New feature: Embedded/Nested shortcodes is now supported.
-* New feature: Full fledged native WordPress editor for adding shortcode content with media buttons.
-* Bug fix: "duplicate percentage" in content on plugin reactivate.
-* Updated admin UI with fixed errors.
-* Updated "insert shortcode" interface is revised and some issues are fixed.
-* Updated with translatable texts in admin page.
-* Minor code revision and changes.
+## Upgrade Notice
 
-= 3.3 =
-* Fixed bug in loops using `foreach`.
-* Fixed several PHP notices.
-
-= 3.2 =
-* Moved the shortcoder admin page to the "Settings" menu.
-* Some admin page issues are fixed.
-
-= 3.1 =
-* Changed the "Custom parameter" syntax from %param% to %%param%%
-* Code revision.
-
-= 3.0.1 = 
-* Added license tag to the readme file.
-
-= 3.0 =
-* Plugin code rewritten from scratch.
-* Shortcode syntax is changed.
-* Supports any custom parameters.
-* Admin interface is redesigned and easy to use.
-* Added a tinyMCE button to the editing toolbar for inserting the shortcodes in the post.
-* Inbuilt shortcodes are removed.
-
-= 2.3 =
-* Can disable the shortcode to Administrators.
-* Admin interface changed.
-
-= 1.3.1 =
-* Changed the folder name's case and some minor bugs.
-* Code revision.
-
-= 1.3 =
-* Initial Version with 5 inbuilt shortcodes.
-
-(Pre made versions are not released)
-
-== Upgrade Notice ==
-
-4.4 is a major upgrade. Entire code is rewritten from scratch.
+Version 5.0 is a major release. Shortcodes from v4 will be migrated to the new way of how shortcodes are stored in v5. Also the navigation is moved to the top level under posts/pages.
