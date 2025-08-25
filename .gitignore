@@ -1,0 +1,26 @@
+# WordPress core
+wp-config.php
+wp-content/uploads/
+wp-content/cache/
+wp-content/upgrade/
+wp-content/advanced-cache.php
+wp-content/backups/
+wp-content/backups-dup-lite/
+wp-content/blogs.dir/
+wp-content/upgrade/
+wp-content/wp-cache-config.php
+wp-content/debug.log
+
+# OS / IDE
+.DS_Store
+Thumbs.db
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Logs
+*.log
+
+# Composer / npm
+vendor/
+node_modules/
